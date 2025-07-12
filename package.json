@@ -42,7 +42,7 @@
     "prettier": "3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "stylelint": "^16.21.1",
-    "stylelint-config-prettier": "^9.0.5",
+    "stylelint-prettier": "^5.0.3",
     "stylelint-config-standard": "^38.0.0",
     "stylelint-config-tailwindcss": "^1.0.0",
     "tailwindcss": "^4.1.11",
@@ -52,10 +52,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix",
-    "*.{css,scss}": [
-      "stylelint --fix",
-      "prettier --write"
-    ],
+    "*.{css,scss}": "stylelint --fix",
     "*.{html,md,json}": "prettier --write"
   }
 }
