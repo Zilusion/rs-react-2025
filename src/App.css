@@ -1,7 +1,0 @@
-.box {
-  width: 200px;
-  height: 200px;
-  background-color: lightblue;
-  display: grid;
-  place-items: center;
-}

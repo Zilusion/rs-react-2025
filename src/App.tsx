@@ -1,11 +1,11 @@
-import { Component } from 'react';
-import './App.css';
+import React from 'react';
+import { SearchPage } from './pages/search-page';
 
-class App extends Component<object> {
+class App extends React.Component {
   render() {
     return (
       <>
-        <h1 className="box text-3xl font-bold underline">Hello world!</h1>
+        <SearchPage />
       </>
     );
   }
