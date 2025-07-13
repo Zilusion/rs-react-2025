@@ -26,7 +26,6 @@ export async function getArtworks(
     ? `${BASE_URL}/artworks/search`
     : `${BASE_URL}/artworks`;
   const url = `${endpoint}?${parameters.toString()}`;
-  console.log(url);
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(response.statusText);
