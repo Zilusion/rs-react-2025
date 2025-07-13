@@ -15,25 +15,36 @@ export class ArtworksSearch extends React.Component<
 
   render() {
     return (
-      <form action="" onSubmit={this.handleSubmit}>
+      <form
+        action=""
+        onSubmit={this.handleSubmit}
+        className="flex items-center gap-2"
+      >
         <input
           type="text"
           name="search-term"
           id="search-term"
           value={this.state.value}
           onChange={this.handleChange}
+          className="rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          placeholder="Search artworks..."
         />
-        <button type="submit">Search</button>
+        <button
+          type="submit"
+          className="rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+        >
+          Search
+        </button>
       </form>
     );
   }
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ value: event.target.value });
+    this.setState({ value: event.target.value.trimStart() });
   };
 
   handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    this.props.onSearch(this.state.value);
+    this.props.onSearch(this.state.value.trim());
   };
 }
