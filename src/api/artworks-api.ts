@@ -28,7 +28,8 @@ export async function getArtworks(
   const url = `${endpoint}?${parameters.toString()}`;
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(response.statusText);
+    const message = `An error has occurred: ${response.status} ${response.statusText}`;
+    throw new Error(message);
   }
   return response.json();
 }
