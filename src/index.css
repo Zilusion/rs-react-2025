@@ -1,1 +1,11 @@
 @import 'tailwindcss';
+
+@theme {
+  --animate-converge: converge 3s ease-in-out infinite;
+
+  @keyframes converge {
+    50% {
+      translate: 0;
+    }
+  }
+}
