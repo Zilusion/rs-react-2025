@@ -1,12 +1,15 @@
 import React from 'react';
-import { getArtworks, getArtworkImageUrl } from '@/api/artworks-api';
+import { getArtworks } from '@/api/artworks-api';
 import type { Artwork } from '@/api/artworks-api.types';
+import { getStoredSearchTerm, setStoredSearchTerm } from '@/services/storage';
+import { ArtworksSearch } from '@/features/artworks-search';
+import { ArtworksList } from '@/features/artworks-list';
 
 interface SearchPageState {
   artworks: Artwork[];
-  imageUrl: string | null;
   isLoading: boolean;
   error: string | null;
+  searchTerm: string;
 }
 
 export class SearchPage extends React.Component<
@@ -15,58 +18,49 @@ export class SearchPage extends React.Component<
 > {
   state: SearchPageState = {
     artworks: [],
-    imageUrl: null,
     isLoading: true,
     error: null,
+    searchTerm: getStoredSearchTerm() || '',
   };
+
   render() {
-    const { isLoading, error, artworks, imageUrl } = this.state;
-
-    if (isLoading) {
-      return <div>Загрузка...</div>;
-    }
-
-    if (error) {
-      return <div>Ошибка: {error}</div>;
-    }
+    const { isLoading, error, artworks, searchTerm } = this.state;
 
     return (
       <div>
-        <h1>Галерея котиков</h1>
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt="Первый котик"
-            style={{ maxWidth: '300px' }}
-          />
-        )}
-
-        <hr />
-        <ul>
-          {artworks.map((artwork) => (
-            <li key={artwork.id}>{artwork.title}</li>
-          ))}
-        </ul>
+        <ArtworksSearch
+          initialValue={searchTerm}
+          onSearch={this.handleSearch}
+        />
+        <ArtworksList items={artworks} isLoading={isLoading} error={error} />
       </div>
     );
   }
 
   async componentDidMount(): Promise<void> {
+    const { searchTerm } = this.state;
+    this.fetchData(searchTerm);
+  }
+
+  handleSearch = (searchTerm: string): void => {
+    setStoredSearchTerm(searchTerm);
+    this.setState({ searchTerm });
+    this.fetchData(searchTerm);
+  };
+
+  fetchData = async (searchTerm: string): Promise<void> => {
     try {
       this.setState({ isLoading: true, error: null });
       const response = await getArtworks({
         page: 1,
         limit: 5,
-        q: 'cats',
+        q: searchTerm,
       });
 
       const artworks = response.data;
-      const firstImageId = artworks.length > 0 ? artworks[0].image_id : null;
-      const imageUrl = getArtworkImageUrl(firstImageId);
 
       this.setState({
         artworks: artworks,
-        imageUrl: imageUrl,
         isLoading: false,
       });
     } catch (err) {
@@ -77,5 +71,5 @@ export class SearchPage extends React.Component<
         isLoading: false,
       });
     }
-  }
+  };
 }
