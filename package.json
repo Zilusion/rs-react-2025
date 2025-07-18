@@ -13,8 +13,8 @@
     "lint:css:fix": "stylelint 'src/**/*.{css,scss}' --fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "check": "pnpm lint && pnpm lint:css && pnpm format",
-    "fix": "pnpm lint:fix && pnpm lint:css:fix && pnpm format:fix",
+    "check": "npm run lint && npm run lint:css && npm run format",
+    "fix": "npm run lint:fix && npm run lint:css:fix && npm run format:fix",
     "prepare": "husky"
   },
   "dependencies": {
