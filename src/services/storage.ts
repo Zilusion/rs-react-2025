@@ -1,4 +1,4 @@
-const SEARCH_TERM_KEY = 'artworks-search-term';
+export const SEARCH_TERM_KEY = 'artworks-search-term';
 
 export function getStoredSearchTerm(): string | null {
   return localStorage.getItem(SEARCH_TERM_KEY);
