@@ -12,11 +12,12 @@ vi.mock('@/services/storage', () => ({
 }));
 
 describe('App Component', () => {
-  it('should render the search page header by default', () => {
+  it('should render the search page and handle initial data load', async () => {
     render(<App />);
 
     const headerElement = screen.getByText(/Search for artworks/i);
     expect(headerElement).toBeInTheDocument();
+    expect(await screen.findByText(/No results found/i)).toBeInTheDocument();
   });
 
   it('should display the error boundary fallback UI when an error occurs in a child component', async () => {
