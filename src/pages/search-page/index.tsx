@@ -10,7 +10,6 @@ export function SearchPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useLocalStorageState('searchTerm', '');
-  const [shouldThrowError, setShouldThrowError] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -36,16 +35,8 @@ export function SearchPage() {
     fetchData();
   }, [searchTerm]);
 
-  if (shouldThrowError) {
-    throw new Error('I crashed on purpose!');
-  }
-
   const handleSearch = (newSearchTerm: string): void => {
     setSearchTerm(newSearchTerm);
-  };
-
-  const handleThrowError = () => {
-    setShouldThrowError(true);
   };
 
   return (
@@ -63,14 +54,6 @@ export function SearchPage() {
       <main className="container mx-auto px-4 py-8">
         <ArtworksList items={artworks} isLoading={isLoading} error={error} />
       </main>
-      <footer className="p-4 text-center">
-        <button
-          onClick={handleThrowError}
-          className="rounded bg-red-600 px-4 py-2 text-white transition hover:bg-red-700"
-        >
-          Throw Error
-        </button>
-      </footer>
     </div>
   );
 }
