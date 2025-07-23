@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
 import { getArtworks } from '@/api/artworks-api';
 import type { Artwork } from '@/api/artworks-api.types';
-import { getStoredSearchTerm, setStoredSearchTerm } from '@/services/storage';
 import { ArtworksSearch } from '@/features/artworks-search';
 import { ArtworksList } from '@/features/artworks-list';
+import { useLocalStorageState } from '@/hooks/use-local-storage-state';
 
 export function SearchPage() {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>(
-    () => getStoredSearchTerm() || '',
-  );
+  const [searchTerm, setSearchTerm] = useLocalStorageState('searchTerm', '');
   const [shouldThrowError, setShouldThrowError] = useState<boolean>(false);
 
   useEffect(() => {
@@ -44,7 +42,6 @@ export function SearchPage() {
 
   const handleSearch = (newSearchTerm: string): void => {
     setSearchTerm(newSearchTerm);
-    setStoredSearchTerm(newSearchTerm);
   };
 
   const handleThrowError = () => {

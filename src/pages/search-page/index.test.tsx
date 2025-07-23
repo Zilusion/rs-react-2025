@@ -2,11 +2,12 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SearchPage } from './index';
 import { getArtworks } from '@/api/artworks-api';
-import { getStoredSearchTerm, setStoredSearchTerm } from '@/services/storage';
 import type { ArtworksApiResponse } from '@/api/artworks-api.types';
 
 vi.mock('@/api/artworks-api');
-vi.mock('@/services/storage');
+
+const getItemSpy = vi.spyOn(Storage.prototype, 'getItem');
+const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
 
 const mockResponse: ArtworksApiResponse = {
   data: [
@@ -45,7 +46,7 @@ describe('SearchPage Component', () => {
   });
 
   it('should fetch and display artworks based on localStorage value on initial render', async () => {
-    vi.mocked(getStoredSearchTerm).mockReturnValue('night');
+    getItemSpy.mockReturnValue(JSON.stringify('night'));
     vi.mocked(getArtworks).mockResolvedValue(mockResponse);
 
     render(<SearchPage />);
@@ -54,14 +55,13 @@ describe('SearchPage Component', () => {
     expect(getArtworks).toHaveBeenCalledWith(
       expect.objectContaining({ q: 'night' }),
     );
-
     expect(await screen.findByText('Starry Night')).toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
   it('should fetch new artworks when a user performs a search', async () => {
     const user = userEvent.setup();
-    vi.mocked(getStoredSearchTerm).mockReturnValue('');
+    getItemSpy.mockReturnValue('');
     vi.mocked(getArtworks).mockResolvedValue(mockResponse);
 
     render(<SearchPage />);
@@ -71,7 +71,10 @@ describe('SearchPage Component', () => {
     await user.type(input, 'night');
     await user.click(button);
 
-    expect(setStoredSearchTerm).toHaveBeenCalledWith('night');
+    expect(setItemSpy).toHaveBeenCalledWith(
+      'searchTerm',
+      JSON.stringify('night'),
+    );
     expect(getArtworks).toHaveBeenCalledTimes(2);
     expect(getArtworks).toHaveBeenCalledWith(
       expect.objectContaining({ q: 'night' }),
@@ -80,7 +83,7 @@ describe('SearchPage Component', () => {
   });
 
   it('should display an error message if the API call fails', async () => {
-    vi.mocked(getStoredSearchTerm).mockReturnValue('');
+    getItemSpy.mockReturnValue('');
     const apiError = new Error('API is down');
     vi.mocked(getArtworks).mockRejectedValue(apiError);
 
@@ -93,7 +96,7 @@ describe('SearchPage Component', () => {
   });
 
   it('should handle non-Error exceptions from the API', async () => {
-    vi.mocked(getStoredSearchTerm).mockReturnValue('');
+    getItemSpy.mockReturnValue('');
     const apiErrorString = 'Something weird happened';
     vi.mocked(getArtworks).mockRejectedValue(apiErrorString);
 
