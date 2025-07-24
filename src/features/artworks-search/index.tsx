@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { Form } from 'react-router-dom';
 
 interface ArtworksSearchProps {
   initialValue: string;
-  onSearch: (searchTerm: string) => void;
 }
 
-export function ArtworksSearch({
-  initialValue,
-  onSearch,
-}: ArtworksSearchProps) {
+export function ArtworksSearch({ initialValue }: ArtworksSearchProps) {
   const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
@@ -19,22 +16,16 @@ export function ArtworksSearch({
     setValue(event.target.value.trimStart());
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    onSearch(value.trim());
-  };
-
   return (
-    <form
+    <Form
       action=""
-      onSubmit={handleSubmit}
       className="flex items-center gap-2"
       role="search"
       aria-label="Artworks search"
     >
       <input
         type="search"
-        name="search-term"
+        name="q"
         id="search-term"
         value={value}
         onChange={handleChange}
@@ -50,6 +41,6 @@ export function ArtworksSearch({
       >
         Search
       </button>
-    </form>
+    </Form>
   );
 }

@@ -1,27 +1,17 @@
 import type { Artwork } from '@/api/artworks-api.types';
 import { Loader } from '../ui/loader';
 import { Card } from '../ui/card';
-import { ErrorMessage } from '../ui/error-message';
 
 interface ArtworksListProps {
   items: Artwork[];
   isLoading: boolean;
-  error: string | null;
 }
 
-export function ArtworksList({ items, isLoading, error }: ArtworksListProps) {
+export function ArtworksList({ items, isLoading }: ArtworksListProps) {
   if (isLoading) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
         <Loader />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex min-h-[200px] items-center justify-center">
-        <ErrorMessage error={error} />
       </div>
     );
   }

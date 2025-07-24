@@ -1,43 +1,11 @@
-import { useEffect, useState } from 'react';
-import { getArtworks } from '@/api/artworks-api';
-import type { Artwork } from '@/api/artworks-api.types';
 import { ArtworksSearch } from '@/features/artworks-search';
 import { ArtworksList } from '@/features/artworks-list';
-import { useLocalStorageState } from '@/hooks/use-local-storage-state';
+import { useLoaderData, useNavigation } from 'react-router-dom';
 
 export function SearchPage() {
-  const [artworks, setArtworks] = useState<Artwork[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useLocalStorageState('searchTerm', '');
-
-  useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await getArtworks({
-          page: 1,
-          limit: 16,
-          q: searchTerm,
-        });
-        setArtworks(response.data);
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'An unknown error occurred';
-        setError(errorMessage);
-        setArtworks([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [searchTerm]);
-
-  const handleSearch = (newSearchTerm: string): void => {
-    setSearchTerm(newSearchTerm);
-  };
+  const { artworksResponse, searchTerm } = useLoaderData();
+  const navigation = useNavigation();
+  const isLoading = navigation.state === 'loading';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -47,12 +15,12 @@ export function SearchPage() {
             Search for artworks
           </h1>
           <nav className="w-full sm:w-auto">
-            <ArtworksSearch initialValue={searchTerm} onSearch={handleSearch} />
+            <ArtworksSearch initialValue={searchTerm} />
           </nav>
         </div>
       </header>
       <main className="container mx-auto px-4 py-8">
-        <ArtworksList items={artworks} isLoading={isLoading} error={error} />
+        <ArtworksList items={artworksResponse.data} isLoading={isLoading} />
       </main>
     </div>
   );
