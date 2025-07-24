@@ -7,6 +7,9 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), tsconfigPaths()],
+  server: {
+    port: 5174,
+  },
   test: {
     globals: true,
     environment: 'jsdom',
@@ -24,7 +27,13 @@ export default defineConfig({
       },
 
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/main.tsx', 'src/vite-env.d.ts', 'src/setupTests.ts', 'src/types', 'src/**/*.types.ts'],
-    }
+      exclude: [
+        'src/main.tsx',
+        'src/vite-env.d.ts',
+        'src/setupTests.ts',
+        'src/types',
+        'src/**/*.types.ts',
+      ],
+    },
   },
 });

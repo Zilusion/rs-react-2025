@@ -1,109 +1,95 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { SearchPage } from './index';
-import { getArtworks } from '@/api/artworks-api';
-import type { ArtworksApiResponse } from '@/api/artworks-api.types';
+import { useLoaderData, useNavigation } from 'react-router-dom';
 
-vi.mock('@/api/artworks-api');
-
-const getItemSpy = vi.spyOn(Storage.prototype, 'getItem');
-const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
-
-const mockResponse: ArtworksApiResponse = {
+const MOCK_ARTWORKS_RESPONSE = {
   data: [
     {
-      id: 123,
-      title: 'Starry Night',
+      id: 1,
+      title: 'Mona Lisa',
+      artist_display: 'Leonardo da Vinci',
+      date_display: 'c. 1503–1506',
+      place_of_origin: 'Florence, Italy',
+      image_id: 'some_image_id_1',
+    },
+    {
+      id: 2,
+      title: 'The Starry Night',
       artist_display: 'Vincent van Gogh',
-      image_id: 'a-real-image-id',
       date_display: '1889',
       place_of_origin: 'Saint-Rémy-de-Provence, France',
-      short_description: 'A painting by Vincent van Gogh',
-      description: 'A painting by Vincent van Gogh',
+      image_id: 'some_image_id_2',
     },
   ],
-  info: {
-    license_links: [],
-    license_text: '',
-    version: '',
-  },
-  pagination: {
-    current_page: 0,
-    limit: 0,
-    offset: 0,
-    total: 0,
-    total_pages: 0,
-  },
-  config: {
-    website_url: '',
-    iiif_url: '',
-  },
 };
 
-describe('SearchPage Component', () => {
-  beforeEach(() => {
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...actual,
+    useLoaderData: vi.fn(),
+    useNavigation: vi.fn(),
+  };
+});
+
+vi.mock('@/features/artworks-search', () => ({
+  ArtworksSearch: (props: { initialValue: string }) => (
+    <div
+      data-testid="artworks-search"
+      data-initial-value={props.initialValue}
+    />
+  ),
+}));
+
+vi.mock('@/features/artworks-list', () => ({
+  ArtworksList: (props: { items: unknown[]; isLoading: boolean }) => (
+    <div
+      data-testid="artworks-list"
+      data-items-count={props.items.length}
+      data-is-loading={props.isLoading}
+    />
+  ),
+}));
+
+describe('SearchPage (Unit)', () => {
+  const mockedUseLoaderData = vi.mocked(useLoaderData);
+  const mockedUseNavigation = vi.mocked(useNavigation);
+
+  afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should fetch and display artworks based on localStorage value on initial render', async () => {
-    getItemSpy.mockReturnValue(JSON.stringify('night'));
-    vi.mocked(getArtworks).mockResolvedValue(mockResponse);
+  it('should pass correct props when data is loaded and state is idle', () => {
+    mockedUseLoaderData.mockReturnValue({
+      artworksResponse: MOCK_ARTWORKS_RESPONSE,
+      searchTerm: 'da vinci',
+    });
+    mockedUseNavigation.mockReturnValue({ state: 'idle' } as ReturnType<
+      typeof useNavigation
+    >);
 
     render(<SearchPage />);
 
-    expect(screen.getByRole('status')).toBeInTheDocument();
-    expect(getArtworks).toHaveBeenCalledWith(
-      expect.objectContaining({ q: 'night' }),
-    );
-    expect(await screen.findByText('Starry Night')).toBeInTheDocument();
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    const search = screen.getByTestId('artworks-search');
+    expect(search).toHaveAttribute('data-initial-value', 'da vinci');
+
+    const list = screen.getByTestId('artworks-list');
+    expect(list).toHaveAttribute('data-items-count', '2');
+    expect(list).toHaveAttribute('data-is-loading', 'false');
   });
 
-  it('should fetch new artworks when a user performs a search', async () => {
-    const user = userEvent.setup();
-    getItemSpy.mockReturnValue('');
-    vi.mocked(getArtworks).mockResolvedValue(mockResponse);
+  it('should pass isLoading=true when navigation state is "loading"', () => {
+    mockedUseLoaderData.mockReturnValue({
+      artworksResponse: MOCK_ARTWORKS_RESPONSE,
+      searchTerm: 'da vinci',
+    });
+    mockedUseNavigation.mockReturnValue({ state: 'loading' } as ReturnType<
+      typeof useNavigation
+    >);
 
     render(<SearchPage />);
 
-    const input = screen.getByRole('searchbox');
-    const button = screen.getByRole('button', { name: /search/i });
-    await user.type(input, 'night');
-    await user.click(button);
-
-    expect(setItemSpy).toHaveBeenCalledWith(
-      'searchTerm',
-      JSON.stringify('night'),
-    );
-    expect(getArtworks).toHaveBeenCalledTimes(2);
-    expect(getArtworks).toHaveBeenCalledWith(
-      expect.objectContaining({ q: 'night' }),
-    );
-    expect(await screen.findByText('Starry Night')).toBeInTheDocument();
-  });
-
-  it('should display an error message if the API call fails', async () => {
-    getItemSpy.mockReturnValue('');
-    const apiError = new Error('API is down');
-    vi.mocked(getArtworks).mockRejectedValue(apiError);
-
-    render(<SearchPage />);
-
-    expect(await screen.findByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText(/API is down/i)).toBeInTheDocument();
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    expect(screen.queryByRole('list')).not.toBeInTheDocument();
-  });
-
-  it('should handle non-Error exceptions from the API', async () => {
-    getItemSpy.mockReturnValue('');
-    const apiErrorString = 'Something weird happened';
-    vi.mocked(getArtworks).mockRejectedValue(apiErrorString);
-
-    render(<SearchPage />);
-
-    const errorMessage = await screen.findByRole('alert');
-    expect(errorMessage).toBeInTheDocument();
-    expect(errorMessage).toHaveTextContent('Error: An unknown error occurred');
+    const list = screen.getByTestId('artworks-list');
+    expect(list).toHaveAttribute('data-is-loading', 'true');
   });
 });

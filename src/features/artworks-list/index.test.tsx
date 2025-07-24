@@ -27,26 +27,17 @@ describe('ArtworksList component', () => {
   ];
 
   it('should render the loader when isLoading is true', () => {
-    render(<ArtworksList items={[]} isLoading={true} error={null} />);
+    render(<ArtworksList items={[]} isLoading={true} />);
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it('should render an error message when error is not null', () => {
-    render(
-      <ArtworksList items={[]} isLoading={false} error="An error occurred" />,
-    );
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-  });
-
   it('should render a list of artworks', () => {
-    render(
-      <ArtworksList items={mockArtworks} isLoading={false} error={null} />,
-    );
+    render(<ArtworksList items={mockArtworks} isLoading={false} />);
     expect(screen.getAllByRole('listitem')).toHaveLength(2);
   });
 
   it('should render a message when there are no artworks', () => {
-    render(<ArtworksList items={[]} isLoading={false} error={null} />);
+    render(<ArtworksList items={[]} isLoading={false} />);
     expect(
       screen.getByText('No results found for your query.'),
     ).toBeInTheDocument();
