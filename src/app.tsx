@@ -1,4 +1,4 @@
-import { SearchPage } from './pages/search-page';
+import { Outlet } from 'react-router-dom';
 import { ErrorBoundary } from './features/error-boundary';
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
           </h1>
         }
       >
-        <SearchPage />
+        <Outlet />
       </ErrorBoundary>
     </>
   );
