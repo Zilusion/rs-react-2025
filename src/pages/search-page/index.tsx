@@ -1,11 +1,14 @@
 import { ArtworksSearch } from '@/features/artworks-search';
 import { ArtworksList } from '@/features/artworks-list';
 import { useLoaderData, useNavigation } from 'react-router-dom';
+import { Pagination } from '@/features/ui/pagination';
 
 export function SearchPage() {
   const { artworksResponse, searchTerm } = useLoaderData();
   const navigation = useNavigation();
   const isLoading = navigation.state === 'loading';
+
+  const { current_page, total_pages } = artworksResponse.pagination;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -22,6 +25,12 @@ export function SearchPage() {
 
       <main className="container mx-auto px-4 py-8">
         <ArtworksList items={artworksResponse.data} isLoading={isLoading} />
+
+        {!isLoading && total_pages > 1 && (
+          <div className="mt-8">
+            <Pagination currentPage={current_page} totalPages={total_pages} />
+          </div>
+        )}
       </main>
     </div>
   );
