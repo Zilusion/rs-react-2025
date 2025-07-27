@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom';
 import { ImageWithFallback } from '../ui/image-with-fallback';
 
-export function ArtworksDetails() {
+export function ArtworkDetails() {
   const artwork = useLoaderData() as Artwork;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -34,7 +34,7 @@ export function ArtworksDetails() {
   const imageUrl = getArtworkImageUrl(artwork.image_id);
 
   return (
-    <aside className="sticky top-28 flex flex-col gap-4 rounded-lg bg-white p-4 shadow-lg ring-1 ring-gray-200">
+    <article className="sticky top-28 flex flex-col gap-4 rounded-lg bg-white p-4 shadow-lg ring-1 ring-gray-200">
       <button
         onClick={handleClose}
         className="self-end text-2xl font-bold text-gray-400 transition hover:text-gray-800"
@@ -75,6 +75,6 @@ export function ArtworksDetails() {
           <dd className="text-gray-700">{artwork.medium_display}</dd>
         </dl>
       </div>
-    </aside>
+    </article>
   );
 }
