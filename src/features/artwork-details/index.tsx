@@ -1,18 +1,12 @@
 import type { Artwork } from '@/api/artworks-api.types';
 import { getArtworkImageUrl } from '@/api/artworks-api';
 import { Loader } from '../ui/loader';
-import {
-  useLoaderData,
-  useNavigate,
-  useNavigation,
-  useSearchParams,
-} from 'react-router-dom';
+import { useLoaderData, useNavigate, useNavigation } from 'react-router-dom';
 import { ImageWithFallback } from '../ui/image-with-fallback';
 
 export function ArtworkDetails() {
   const artwork = useLoaderData() as Artwork;
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const navigation = useNavigation();
 
   const isLoading =
@@ -20,7 +14,7 @@ export function ArtworkDetails() {
     navigation.location.pathname.includes('/collection/');
 
   const handleClose = () => {
-    navigate(`/?${searchParams.toString()}`);
+    navigate(-1);
   };
 
   if (isLoading) {

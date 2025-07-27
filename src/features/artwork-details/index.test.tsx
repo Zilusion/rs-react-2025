@@ -1,5 +1,5 @@
 import { act, render, screen } from '@testing-library/react';
-import { createMemoryRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { getArtwork } from '@/api/artworks-api';
 import { loader as artworkDetailsLoader } from './loader';
 import { ArtworkDetails } from '.';
@@ -15,18 +15,12 @@ vi.mock('@/api/artworks-api');
 const testRoutes = [
   {
     path: '/collection/:page',
-    element: (
-      <div>
-        Collection List <Outlet />
-      </div>
-    ),
-    children: [
-      {
-        path: ':artworkId',
-        element: <ArtworkDetails />,
-        loader: artworkDetailsLoader,
-      },
-    ],
+    element: <div>Collection Page Content</div>,
+  },
+  {
+    path: '/collection/:page/:artworkId',
+    element: <ArtworkDetails />,
+    loader: artworkDetailsLoader,
   },
 ];
 
@@ -89,42 +83,27 @@ describe('ArtworkDetails component', () => {
     ).toBeInTheDocument();
   });
 
-  it('should navigate to the collection page with search params preserved on close', async () => {
+  it('should navigate to the previous page in history on close', async () => {
     const user = userEvent.setup();
     mockedGetArtwork.mockResolvedValue(MOCK_API_RESPONSE_DETAILS);
 
-    const testRoutesWithRoot = [
-      {
-        path: '/',
-        element: <div>You are on the Root Page</div>,
-      },
-      {
-        path: '/collection/:page',
-        element: <Outlet />,
-        children: [
-          {
-            path: ':artworkId',
-            element: <ArtworkDetails />,
-            loader: artworkDetailsLoader,
-          },
-        ],
-      },
-    ];
-
-    const router = createMemoryRouter(testRoutesWithRoot, {
-      initialEntries: ['/collection/1/123?q=cats'],
+    const router = createMemoryRouter(testRoutes, {
+      initialEntries: ['/collection/5?q=cats', '/collection/5/123?q=cats'],
+      initialIndex: 1,
     });
 
     render(<RouterProvider router={router} />);
 
     const closeButton = await screen.findByRole('button', { name: /close/i });
-
     await user.click(closeButton);
 
-    expect(router.state.location.pathname).toBe('/');
-    expect(router.state.location.search).toBe('?q=cats');
     expect(
-      await screen.findByText('You are on the Root Page'),
-    ).toBeInTheDocument();
+      screen.queryByRole('heading', {
+        name: MOCK_API_RESPONSE_DETAILS.data.title,
+      }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('Collection Page Content')).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/collection/5');
+    expect(router.state.location.search).toBe('?q=cats');
   });
 });

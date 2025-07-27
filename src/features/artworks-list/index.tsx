@@ -1,7 +1,7 @@
 import type { Artwork } from '@/api/artworks-api.types';
 import { Loader } from '../ui/loader';
 import { Card } from '../ui/card';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 interface ArtworksListProps {
   items: Artwork[];
@@ -14,6 +14,9 @@ export function ArtworksList({
   isLoading,
   buildDetailUrl,
 }: ArtworksListProps) {
+  const params = useParams();
+  const isDetailViewOpen = !!params.artworkId;
+
   if (isLoading) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
@@ -32,7 +35,11 @@ export function ArtworksList({
         const detailUrl = buildDetailUrl(artwork.id);
         return (
           <li key={artwork.id} className="flex">
-            <Link to={detailUrl} className="flex w-full">
+            <Link
+              to={detailUrl}
+              replace={isDetailViewOpen}
+              className="flex w-full"
+            >
               <Card artwork={artwork} />
             </Link>
           </li>
