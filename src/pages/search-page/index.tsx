@@ -1,12 +1,18 @@
 import { ArtworksSearch } from '@/features/artworks-search';
 import { ArtworksList } from '@/features/artworks-list';
-import { useLoaderData, useNavigation } from 'react-router-dom';
+import {
+  Outlet,
+  useLoaderData,
+  useNavigation,
+  useOutlet,
+} from 'react-router-dom';
 import { Pagination } from '@/features/ui/pagination';
 
 export function SearchPage() {
   const { artworksResponse, searchTerm } = useLoaderData();
   const navigation = useNavigation();
   const isLoading = navigation.state === 'loading';
+  const outlet = useOutlet();
 
   const { current_page, total_pages } = artworksResponse.pagination;
 
@@ -23,15 +29,30 @@ export function SearchPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <ArtworksList items={artworksResponse.data} isLoading={isLoading} />
+      <div
+        className={`container mx-auto grid grid-cols-1 gap-8 px-4 py-8 ${
+          outlet ? 'md:grid-cols-3' : 'md:grid-cols-2'
+        }`}
+      >
+        <main className="md:col-span-2">
+          <ArtworksList
+            items={artworksResponse.data}
+            isLoading={
+              isLoading && !navigation.location.pathname.includes('/artworks/')
+            }
+          />
 
-        {!isLoading && total_pages > 1 && (
-          <div className="mt-8">
-            <Pagination currentPage={current_page} totalPages={total_pages} />
-          </div>
-        )}
-      </main>
+          {!isLoading && total_pages > 1 && (
+            <div className="mt-8">
+              <Pagination currentPage={current_page} totalPages={total_pages} />
+            </div>
+          )}
+        </main>
+
+        <aside className="md:col-span-1">
+          <Outlet />
+        </aside>
+      </div>
     </div>
   );
 }

@@ -41,3 +41,13 @@ export function getArtworkImageUrl(imageId: string | null): string | null {
 
   return `${IIIF_BASE_URL}/${imageId}${IMAGE_URL_SUFFIX}`;
 }
+
+export async function getArtwork(id: number) {
+  const url = `${BASE_URL}/artworks/${id}`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    const message = `An error has occurred: ${response.status} ${response.statusText}`;
+    throw new Error(message);
+  }
+  return response.json();
+}

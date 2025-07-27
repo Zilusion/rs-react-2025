@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Form } from 'react-router-dom';
 
 interface ArtworksSearchProps {
@@ -7,10 +7,6 @@ interface ArtworksSearchProps {
 
 export function ArtworksSearch({ initialValue }: ArtworksSearchProps) {
   const [value, setValue] = useState(initialValue);
-
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value.trimStart());

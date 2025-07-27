@@ -9,6 +9,8 @@ import { AboutPage } from './pages/about-page/index.tsx';
 import { NotFoundPage } from './pages/not-found-page/index.tsx';
 import { Layout } from './features/ui/layout/index.tsx';
 import App from './app.tsx';
+import { ArtworksDetails } from './features/artworks-details/index.tsx';
+import { loader as artworkDetailsLoader } from './features/artworks-details/loader.ts';
 
 const router = createBrowserRouter([
   {
@@ -19,9 +21,16 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
           {
-            index: true,
+            path: '/',
             element: <SearchPage />,
             loader: searchPageLoader,
+            children: [
+              {
+                path: 'artworks/:artworkId',
+                element: <ArtworksDetails />,
+                loader: artworkDetailsLoader,
+              },
+            ],
           },
           {
             path: 'about',

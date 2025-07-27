@@ -6,6 +6,8 @@ export interface ArtworksApiParameters {
 }
 
 export interface Artwork {
+  dimensions: string;
+  medium_display: string;
   id: number;
   title: string;
   image_id: string | null;
