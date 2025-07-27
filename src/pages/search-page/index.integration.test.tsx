@@ -9,6 +9,8 @@ const MOCK_ARTWORKS_RESPONSE_DA_VINCI = {
       image_id: 'some_image_id_1',
       short_description: 'A painting by Leonardo da Vinci',
       description: 'A painting by Leonardo da Vinci',
+      dimensions: '41 x 30.5 cm',
+      medium_display: 'Oil on canvas',
     },
     {
       id: 2,
@@ -19,6 +21,8 @@ const MOCK_ARTWORKS_RESPONSE_DA_VINCI = {
       image_id: 'some_image_id_2',
       short_description: 'A painting by Vincent van Gogh',
       description: 'A painting by Vincent van Gogh',
+      dimensions: '41 x 30.5 cm',
+      medium_display: 'Oil on canvas',
     },
   ],
   info: {
@@ -50,6 +54,8 @@ const MOCK_ARTWORKS_RESPONSE_PICASSO = {
       image_id: 'some_image_id_3',
       short_description: 'A painting by Pablo Picasso',
       description: 'A painting by Pablo Picasso',
+      dimensions: '41 x 30.5 cm',
+      medium_display: 'Oil on canvas',
     },
   ],
   info: {

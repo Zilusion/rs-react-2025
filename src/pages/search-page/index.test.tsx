@@ -21,6 +21,22 @@ const MOCK_ARTWORKS_RESPONSE = {
       image_id: 'some_image_id_2',
     },
   ],
+  info: {
+    license_links: [],
+    license_text: '',
+    version: '',
+  },
+  pagination: {
+    current_page: 0,
+    limit: 0,
+    offset: 0,
+    total: 0,
+    total_pages: 0,
+  },
+  config: {
+    website_url: '',
+    iiif_url: '',
+  },
 };
 
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -64,9 +80,10 @@ describe('SearchPage (Unit)', () => {
       artworksResponse: MOCK_ARTWORKS_RESPONSE,
       searchTerm: 'da vinci',
     });
-    mockedUseNavigation.mockReturnValue({ state: 'idle' } as ReturnType<
-      typeof useNavigation
-    >);
+    mockedUseNavigation.mockReturnValue({
+      state: 'idle',
+      location: undefined,
+    } as ReturnType<typeof useNavigation>);
 
     render(<SearchPage />);
 
@@ -83,9 +100,16 @@ describe('SearchPage (Unit)', () => {
       artworksResponse: MOCK_ARTWORKS_RESPONSE,
       searchTerm: 'da vinci',
     });
-    mockedUseNavigation.mockReturnValue({ state: 'loading' } as ReturnType<
-      typeof useNavigation
-    >);
+    mockedUseNavigation.mockReturnValue({
+      state: 'loading',
+      location: {
+        pathname: '/',
+        search: '',
+        hash: '',
+        state: null,
+        key: 'default',
+      },
+    } as ReturnType<typeof useNavigation>);
 
     render(<SearchPage />);
 
