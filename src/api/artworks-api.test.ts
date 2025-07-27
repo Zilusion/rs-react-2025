@@ -1,4 +1,4 @@
-import { getArtworks, getArtworkImageUrl } from './artworks-api';
+import { getArtworks, getArtworkImageUrl, getArtwork } from './artworks-api';
 import type { ArtworksApiResponse } from './artworks-api.types';
 
 const mockFetch = vi.fn();
@@ -81,6 +81,30 @@ describe('Artworks API', () => {
 
     it('should return null when image_id is null', () => {
       expect(getArtworkImageUrl(null)).toBeNull();
+    });
+  });
+
+  describe('getArtwork', () => {
+    it('should return a valid Artwork object when an ID is provided', async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      const result = await getArtwork(123);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should throw an error if the network response is not ok', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+      });
+
+      await expect(getArtwork(123)).rejects.toThrow(
+        'An error has occurred: 404 Not Found',
+      );
     });
   });
 });

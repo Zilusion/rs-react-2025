@@ -1,4 +1,5 @@
 import type {
+  Artwork,
   ArtworksApiParameters,
   ArtworksApiResponse,
 } from './artworks-api.types';
@@ -42,7 +43,7 @@ export function getArtworkImageUrl(imageId: string | null): string | null {
   return `${IIIF_BASE_URL}/${imageId}${IMAGE_URL_SUFFIX}`;
 }
 
-export async function getArtwork(id: number) {
+export async function getArtwork(id: number): Promise<{ data: Artwork }> {
   const url = `${BASE_URL}/artworks/${id}`;
   const response = await fetch(url);
   if (!response.ok) {
