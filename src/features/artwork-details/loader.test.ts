@@ -1,23 +1,8 @@
 import { getArtwork } from '@/api/artworks-api';
-import type { Artwork } from '@/api/artworks-api.types';
 import { loader } from './loader';
+import { MOCK_API_RESPONSE_DETAILS } from '@/__mocks__/artworks';
 
 vi.mock('@/api/artworks-api');
-
-const mockApiResponse: { data: Artwork } = {
-  data: {
-    id: 1,
-    title: 'Starry Night',
-    image_id: null,
-    date_display: '',
-    artist_display: '',
-    place_of_origin: '',
-    short_description: '',
-    description: '',
-    dimensions: '',
-    medium_display: '',
-  },
-};
 
 describe('ArtworkDetails Loader', () => {
   const mockedGetArtwork = vi.mocked(getArtwork);
@@ -27,7 +12,7 @@ describe('ArtworkDetails Loader', () => {
   });
 
   it('should parse search params from the request and call getArtworks with them', async () => {
-    mockedGetArtwork.mockResolvedValue(mockApiResponse);
+    mockedGetArtwork.mockResolvedValue(MOCK_API_RESPONSE_DETAILS);
     const request = new Request('http://localhost/artworks/123');
 
     const result = await loader({
@@ -38,7 +23,7 @@ describe('ArtworkDetails Loader', () => {
 
     expect(mockedGetArtwork).toHaveBeenCalledWith(123);
 
-    expect(result).toEqual(mockApiResponse.data);
+    expect(result).toEqual(MOCK_API_RESPONSE_DETAILS.data);
   });
 
   it('should throw a Response error if artworkId is missing in params', async () => {

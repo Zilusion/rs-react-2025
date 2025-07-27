@@ -1,43 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import { SearchPage } from './index';
-import { useLoaderData, useNavigation } from 'react-router-dom';
-
-const MOCK_ARTWORKS_RESPONSE = {
-  data: [
-    {
-      id: 1,
-      title: 'Mona Lisa',
-      artist_display: 'Leonardo da Vinci',
-      date_display: 'c. 1503–1506',
-      place_of_origin: 'Florence, Italy',
-      image_id: 'some_image_id_1',
-    },
-    {
-      id: 2,
-      title: 'The Starry Night',
-      artist_display: 'Vincent van Gogh',
-      date_display: '1889',
-      place_of_origin: 'Saint-Rémy-de-Provence, France',
-      image_id: 'some_image_id_2',
-    },
-  ],
-  info: {
-    license_links: [],
-    license_text: '',
-    version: '',
-  },
-  pagination: {
-    current_page: 1,
-    limit: 16,
-    offset: 0,
-    total: 80,
-    total_pages: 5,
-  },
-  config: {
-    website_url: '',
-    iiif_url: '',
-  },
-};
+import { CollectionPage } from './index';
+import { useLoaderData, useNavigation, useParams } from 'react-router-dom';
+import { MOCK_API_RESPONSE_LIST } from '@/__mocks__/artworks';
 
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
@@ -45,6 +9,8 @@ vi.mock('react-router-dom', async (importOriginal) => {
     ...actual,
     useLoaderData: vi.fn(),
     useNavigation: vi.fn(),
+    useOutlet: vi.fn(() => null),
+    useParams: vi.fn(),
   };
 });
 
@@ -77,31 +43,41 @@ vi.mock('@/features/ui/pagination', () => ({
   ),
 }));
 
-describe('SearchPage (Unit)', () => {
+describe('CollectionPage (Unit)', () => {
   const mockedUseLoaderData = vi.mocked(useLoaderData);
   const mockedUseNavigation = vi.mocked(useNavigation);
+  const mockedUseParams = vi.mocked(useParams);
 
-  afterEach(() => {
+  beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should pass correct props when data is loaded and state is idle', () => {
+  it('should pass correct props to children when data is loaded and state is idle', () => {
     mockedUseLoaderData.mockReturnValue({
-      artworksResponse: MOCK_ARTWORKS_RESPONSE,
+      artworksResponse: {
+        ...MOCK_API_RESPONSE_LIST,
+        pagination: { ...MOCK_API_RESPONSE_LIST.pagination, total_pages: 5 },
+      },
       searchTerm: 'da vinci',
+      currentPage: 1,
     });
     mockedUseNavigation.mockReturnValue({
       state: 'idle',
       location: undefined,
     } as ReturnType<typeof useNavigation>);
+    mockedUseParams.mockReturnValue({});
 
-    render(<SearchPage />);
+    render(<CollectionPage />);
 
-    const search = screen.getByTestId('artworks-search');
-    expect(search).toHaveAttribute('data-initial-value', 'da vinci');
-
+    expect(screen.getByTestId('artworks-search')).toHaveAttribute(
+      'data-initial-value',
+      'da vinci',
+    );
     const list = screen.getByTestId('artworks-list');
-    expect(list).toHaveAttribute('data-items-count', '2');
+    expect(list).toHaveAttribute(
+      'data-items-count',
+      String(MOCK_API_RESPONSE_LIST.data.length),
+    );
     expect(list).toHaveAttribute('data-is-loading', 'false');
 
     const pagination = screen.getByTestId('pagination');
@@ -109,25 +85,51 @@ describe('SearchPage (Unit)', () => {
     expect(pagination).toHaveAttribute('data-total-pages', '5');
   });
 
-  it('should pass isLoading=true when navigation state is "loading"', () => {
+  it('should pass isLoading=true to ArtworksList when navigation state is "loading"', () => {
     mockedUseLoaderData.mockReturnValue({
-      artworksResponse: MOCK_ARTWORKS_RESPONSE,
+      artworksResponse: MOCK_API_RESPONSE_LIST,
       searchTerm: 'da vinci',
+      currentPage: 1,
     });
     mockedUseNavigation.mockReturnValue({
       state: 'loading',
       location: {
-        pathname: '/',
-        search: '',
+        pathname: '/collection/1',
+        search: '?q=cats',
         hash: '',
         state: null,
-        key: 'default',
+        key: 'abc',
       },
     } as ReturnType<typeof useNavigation>);
+    mockedUseParams.mockReturnValue({});
 
-    render(<SearchPage />);
+    render(<CollectionPage />);
 
     const list = screen.getByTestId('artworks-list');
     expect(list).toHaveAttribute('data-is-loading', 'true');
+  });
+
+  it('should pass isLoading=false when loading details on the same page', () => {
+    mockedUseLoaderData.mockReturnValue({
+      artworksResponse: MOCK_API_RESPONSE_LIST,
+      searchTerm: 'da vinci',
+      currentPage: 1,
+    });
+    mockedUseNavigation.mockReturnValue({
+      state: 'loading',
+      location: {
+        pathname: '/collection/1/123',
+        search: '?q=cats',
+        hash: '',
+        state: null,
+        key: 'abc',
+      },
+    } as ReturnType<typeof useNavigation>);
+    mockedUseParams.mockReturnValue({ artworkId: '123' });
+
+    render(<CollectionPage />);
+
+    const list = screen.getByTestId('artworks-list');
+    expect(list).toHaveAttribute('data-is-loading', 'false');
   });
 });

@@ -1,21 +1,51 @@
 import { render, screen } from '@testing-library/react';
 import { ErrorPage } from './index';
-import { useRouteError, isRouteErrorResponse } from 'react-router-dom';
+import {
+  MemoryRouter,
+  useRouteError,
+  isRouteErrorResponse,
+} from 'react-router-dom';
+import { PATHS } from '@/lib/paths';
 import type { MockInstance } from 'vitest';
 
-vi.mock('react-router-dom', () => ({
-  isRouteErrorResponse: vi.fn(),
-  useRouteError: vi.fn(),
-}));
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...actual,
+    isRouteErrorResponse: vi.fn(),
+    useRouteError: vi.fn(),
+  };
+});
 
 describe('ErrorPage component', () => {
   let consoleErrorSpy: MockInstance;
+
   beforeEach(() => {
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => null);
   });
+
   afterEach(() => {
     vi.clearAllMocks();
     consoleErrorSpy.mockRestore();
+  });
+
+  const renderErrorPage = () => {
+    render(
+      <MemoryRouter>
+        <ErrorPage />
+      </MemoryRouter>,
+    );
+  };
+
+  it('should render a link to the collection page', () => {
+    vi.mocked(useRouteError).mockReturnValue('Some error');
+    vi.mocked(isRouteErrorResponse).mockReturnValue(false);
+
+    renderErrorPage();
+
+    const homeLink = screen.getByRole('link', { name: /Go Home/i });
+    expect(homeLink).toBeInTheDocument();
+    expect(homeLink).toHaveAttribute('href', PATHS.collection());
   });
 
   it('should display status and statusText for a route error response', () => {
@@ -25,7 +55,7 @@ describe('ErrorPage component', () => {
       statusText: 'Not Found',
     });
 
-    render(<ErrorPage />);
+    renderErrorPage();
 
     expect(screen.getByText(/404 Not Found/i)).toBeInTheDocument();
   });
@@ -34,7 +64,7 @@ describe('ErrorPage component', () => {
     vi.mocked(isRouteErrorResponse).mockReturnValue(false);
     vi.mocked(useRouteError).mockReturnValue(new Error('Test message'));
 
-    render(<ErrorPage />);
+    renderErrorPage();
 
     expect(screen.getByText('Test message')).toBeInTheDocument();
   });
@@ -43,7 +73,7 @@ describe('ErrorPage component', () => {
     vi.mocked(isRouteErrorResponse).mockReturnValue(false);
     vi.mocked(useRouteError).mockReturnValue('Test message');
 
-    render(<ErrorPage />);
+    renderErrorPage();
 
     expect(screen.getByText('Test message')).toBeInTheDocument();
   });
@@ -52,7 +82,7 @@ describe('ErrorPage component', () => {
     vi.mocked(isRouteErrorResponse).mockReturnValue(false);
     vi.mocked(useRouteError).mockReturnValue(null);
 
-    render(<ErrorPage />);
+    renderErrorPage();
 
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
   });

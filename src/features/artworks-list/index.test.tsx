@@ -1,66 +1,68 @@
 import { render, screen } from '@testing-library/react';
 import { ArtworksList } from '.';
 import type { Artwork } from '@/api/artworks-api.types';
+import {
+  MOCK_ARTWORK_ANOTHER,
+  MOCK_ARTWORK_WITH_IMAGE,
+} from '@/__mocks__/artworks';
 import { MemoryRouter } from 'react-router-dom';
 
-const mockArtworks: Artwork[] = [
-  {
-    id: 1,
-    title: 'Starry Night',
-    artist_display: 'Vincent van Gogh',
-    image_id: 'a-real-image-id',
-    date_display: '1889',
-    place_of_origin: 'Saint-Rémy-de-Provence, France',
-    short_description: 'A painting by Vincent van Gogh',
-    description: 'A painting by Vincent van Gogh',
-    dimensions: '',
-    medium_display: '',
-  },
-  {
-    id: 2,
-    title: 'The Persistence of Memory',
-    artist_display: 'Salvador Dalí',
-    image_id: 'another-real-id',
-    date_display: '1931',
-    place_of_origin: 'Madrid, Spain',
-    short_description: 'A painting by Salvador Dalí',
-    description: 'A painting by Salvador Dalí',
-    dimensions: '',
-    medium_display: '',
-  },
-];
+const mockArtworks: Artwork[] = [MOCK_ARTWORK_WITH_IMAGE, MOCK_ARTWORK_ANOTHER];
 
 describe('ArtworksList component', () => {
+  const mockBuildDetailUrl = vi.fn(
+    (artworkId: number) => `/test/url/${artworkId}`,
+  );
+
+  beforeEach(() => {
+    mockBuildDetailUrl.mockClear();
+  });
+
   it('should render the loader when isLoading is true', () => {
     render(
       <MemoryRouter>
-        <ArtworksList items={[]} isLoading={true} />
+        <ArtworksList
+          items={[]}
+          isLoading={true}
+          buildDetailUrl={mockBuildDetailUrl}
+        />
       </MemoryRouter>,
     );
     expect(screen.getByRole('status')).toBeInTheDocument();
-    expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
 
-  it('should render a list of artworks with correct links', () => {
+  it('should render a list of artworks and call buildDetailUrl for each item', () => {
     render(
-      <MemoryRouter initialEntries={['/?q=night&page=1']}>
-        <ArtworksList items={mockArtworks} isLoading={false} />
+      <MemoryRouter>
+        <ArtworksList
+          items={mockArtworks}
+          isLoading={false}
+          buildDetailUrl={mockBuildDetailUrl}
+        />
       </MemoryRouter>,
     );
 
     expect(screen.getAllByRole('listitem')).toHaveLength(mockArtworks.length);
-    const link = screen.getByRole('link', { name: /Starry Night/i });
-    expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute('href', '/artworks/1?q=night&page=1');
+    expect(mockBuildDetailUrl).toHaveBeenCalledTimes(mockArtworks.length);
+    expect(mockBuildDetailUrl).toHaveBeenCalledWith(mockArtworks[0].id);
+    expect(mockBuildDetailUrl).toHaveBeenCalledWith(mockArtworks[1].id);
+
+    const link = screen.getByRole('link', {
+      name: new RegExp(mockArtworks[0].title),
+    });
+    expect(link).toHaveAttribute('href', `/test/url/${mockArtworks[0].id}`);
   });
 
   it('should render a message when there are no artworks', () => {
     render(
       <MemoryRouter>
-        <ArtworksList items={[]} isLoading={false} />
+        <ArtworksList
+          items={[]}
+          isLoading={false}
+          buildDetailUrl={mockBuildDetailUrl}
+        />
       </MemoryRouter>,
     );
-
     expect(
       screen.getByText('No results found for your query.'),
     ).toBeInTheDocument();

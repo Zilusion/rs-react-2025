@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { NotFoundPage } from '.';
 import { MemoryRouter } from 'react-router-dom';
+import { PATHS } from '@/lib/paths';
 
 describe('NotFoundPage component', () => {
   it('should render all content and the home link correctly', () => {
@@ -17,9 +18,9 @@ describe('NotFoundPage component', () => {
     expect(
       screen.getByText(/Sorry, the page you are looking for does not exist./i),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Go Home/i })).toHaveAttribute(
-      'href',
-      '/',
-    );
+
+    const homeLink = screen.getByRole('link', { name: /Go Home/i });
+    expect(homeLink).toBeInTheDocument();
+    expect(homeLink).toHaveAttribute('href', PATHS.collection());
   });
 });

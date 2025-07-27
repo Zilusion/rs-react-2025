@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { AboutPage } from '.';
 import { MemoryRouter } from 'react-router-dom';
+import { PATHS } from '@/lib/paths';
 
 describe('AboutPage component', () => {
   it('should render all content and links correctly', () => {
@@ -21,6 +22,6 @@ describe('AboutPage component', () => {
     ).toHaveAttribute('href', 'https://rs.school/courses/reactjs');
     expect(
       screen.getByRole('link', { name: /Back to Search/i }),
-    ).toHaveAttribute('href', '/');
+    ).toHaveAttribute('href', PATHS.collection());
   });
 });
