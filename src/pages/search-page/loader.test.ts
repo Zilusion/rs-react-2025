@@ -15,6 +15,8 @@ const mockApiResponse: ArtworksApiResponse = {
       place_of_origin: '',
       short_description: '',
       description: '',
+      dimensions: '',
+      medium_display: '',
     },
   ],
   info: {

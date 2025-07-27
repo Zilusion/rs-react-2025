@@ -27,11 +27,11 @@ const MOCK_ARTWORKS_RESPONSE = {
     version: '',
   },
   pagination: {
-    current_page: 0,
-    limit: 0,
+    current_page: 1,
+    limit: 16,
     offset: 0,
-    total: 0,
-    total_pages: 0,
+    total: 80,
+    total_pages: 5,
   },
   config: {
     website_url: '',
@@ -67,6 +67,16 @@ vi.mock('@/features/artworks-list', () => ({
   ),
 }));
 
+vi.mock('@/features/ui/pagination', () => ({
+  Pagination: (props: { currentPage: number; totalPages: number }) => (
+    <div
+      data-testid="pagination"
+      data-current-page={props.currentPage}
+      data-total-pages={props.totalPages}
+    />
+  ),
+}));
+
 describe('SearchPage (Unit)', () => {
   const mockedUseLoaderData = vi.mocked(useLoaderData);
   const mockedUseNavigation = vi.mocked(useNavigation);
@@ -93,6 +103,10 @@ describe('SearchPage (Unit)', () => {
     const list = screen.getByTestId('artworks-list');
     expect(list).toHaveAttribute('data-items-count', '2');
     expect(list).toHaveAttribute('data-is-loading', 'false');
+
+    const pagination = screen.getByTestId('pagination');
+    expect(pagination).toHaveAttribute('data-current-page', '1');
+    expect(pagination).toHaveAttribute('data-total-pages', '5');
   });
 
   it('should pass isLoading=true when navigation state is "loading"', () => {

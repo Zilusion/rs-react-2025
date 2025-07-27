@@ -30,11 +30,9 @@ export function SearchPage() {
       </header>
 
       <div
-        className={`container mx-auto grid grid-cols-1 gap-8 px-4 py-8 ${
-          outlet ? 'md:grid-cols-3' : 'md:grid-cols-2'
-        }`}
+        className={`container mx-auto grid grid-cols-1 gap-8 px-4 py-8 md:grid-cols-3`}
       >
-        <main className="md:col-span-2">
+        <main className={outlet ? 'md:col-span-2' : 'md:col-span-3'}>
           <ArtworksList
             items={artworksResponse.data}
             isLoading={
@@ -49,9 +47,11 @@ export function SearchPage() {
           )}
         </main>
 
-        <aside className="md:col-span-1">
-          <Outlet />
-        </aside>
+        {outlet && (
+          <aside className="md:col-span-1">
+            <Outlet />
+          </aside>
+        )}
       </div>
     </div>
   );

@@ -9,8 +9,8 @@ import { AboutPage } from './pages/about-page/index.tsx';
 import { NotFoundPage } from './pages/not-found-page/index.tsx';
 import { Layout } from './features/ui/layout/index.tsx';
 import App from './app.tsx';
-import { ArtworksDetails } from './features/artworks-details/index.tsx';
-import { loader as artworkDetailsLoader } from './features/artworks-details/loader.ts';
+import { ArtworkDetails } from './features/artwork-details/index.tsx';
+import { loader as artworkDetailsLoader } from './features/artwork-details/loader.ts';
 
 const router = createBrowserRouter([
   {
@@ -27,7 +27,7 @@ const router = createBrowserRouter([
             children: [
               {
                 path: 'artworks/:artworkId',
-                element: <ArtworksDetails />,
+                element: <ArtworkDetails />,
                 loader: artworkDetailsLoader,
               },
             ],
