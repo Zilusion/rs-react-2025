@@ -1,6 +1,7 @@
 import type { Artwork } from '@/api/artworks-api.types';
 import { Loader } from '../ui/loader';
 import { Card } from '../ui/card';
+import { Link, useLocation } from 'react-router-dom';
 
 interface ArtworksListProps {
   items: Artwork[];
@@ -8,6 +9,8 @@ interface ArtworksListProps {
 }
 
 export function ArtworksList({ items, isLoading }: ArtworksListProps) {
+  const location = useLocation();
+
   if (isLoading) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
@@ -22,11 +25,16 @@ export function ArtworksList({ items, isLoading }: ArtworksListProps) {
 
   return (
     <ul className="grid grid-cols-1 gap-6 py-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {items.map((artwork) => (
-        <li key={artwork.id} className="flex">
-          <Card artwork={artwork} />
-        </li>
-      ))}
+      {items.map((artwork) => {
+        const detailUrl = `/artworks/${artwork.id}${location.search}`;
+        return (
+          <li key={artwork.id} className="flex">
+            <Link to={detailUrl} className="flex w-full">
+              <Card artwork={artwork} />
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }
