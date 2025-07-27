@@ -1,26 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import { ErrorBoundary } from './index';
-import React from 'react';
 import type { MockInstance } from 'vitest';
 
-class GoodComponent extends React.Component {
-  render() {
-    return <div>Everything is awesome!</div>;
-  }
-}
+const GoodComponent = () => <div>Everything is awesome!</div>;
 
-class Bomb extends React.Component {
-  render() {
-    throw new Error('💥 KABOOM 💥');
-    return null;
-  }
-}
+const Bomb = () => {
+  throw new Error('💥 KABOOM 💥');
+  return null;
+};
 
-class FallbackComponent extends React.Component {
-  render() {
-    return <div>Something went wrong</div>;
-  }
-}
+const FallbackComponent = () => <div>Something went wrong</div>;
 
 describe('ErrorBoundary component', () => {
   let consoleErrorSpy: MockInstance;

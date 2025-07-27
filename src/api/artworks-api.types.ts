@@ -1,11 +1,25 @@
-export interface ArtworksApiParameters {
-  page?: number;
-  limit?: number;
-  q?: string;
-  fields?: string;
+export interface Pagination {
+  total: number;
+  limit: number;
+  offset: number;
+  total_pages: number;
+  current_page: number;
+}
+
+export interface ApiInfo {
+  license_text: string;
+  license_links: string[];
+  version: string;
+}
+
+export interface ApiConfig {
+  iiif_url: string;
+  website_url: string;
 }
 
 export interface Artwork {
+  dimensions: string;
+  medium_display: string;
   id: number;
   title: string;
   image_id: string | null;
@@ -16,22 +30,22 @@ export interface Artwork {
   description: string;
 }
 
+export interface ArtworksApiParams {
+  page?: number;
+  limit?: number;
+  q?: string;
+  fields?: string;
+}
+
 export interface ArtworksApiResponse {
+  pagination: Pagination;
   data: Artwork[];
-  info: {
-    license_links: string[];
-    license_text: string;
-    version: string;
-  };
-  pagination: {
-    current_page: number;
-    limit: number;
-    offset: number;
-    total: number;
-    total_pages: number;
-  };
-  config: {
-    website_url: string;
-    iiif_url: string;
-  };
+  info: ApiInfo;
+  config: ApiConfig;
+}
+
+export interface ArtworkDetailApiResponse {
+  data: Artwork;
+  info: ApiInfo;
+  config: ApiConfig;
 }

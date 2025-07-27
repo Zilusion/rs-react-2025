@@ -1,28 +1,8 @@
-import { getArtworks, getArtworkImageUrl } from './artworks-api';
-import type { ArtworksApiResponse } from './artworks-api.types';
+import { MOCK_API_RESPONSE_LIST } from '@/__mocks__/artworks';
+import { getArtworks, getArtworkImageUrl, getArtwork } from './artworks-api';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
-
-const mockResponse: ArtworksApiResponse = {
-  data: [],
-  info: {
-    license_links: [],
-    license_text: '',
-    version: '',
-  },
-  pagination: {
-    current_page: 0,
-    limit: 0,
-    offset: 0,
-    total: 0,
-    total_pages: 0,
-  },
-  config: {
-    website_url: '',
-    iiif_url: '',
-  },
-};
 
 describe('Artworks API', () => {
   beforeEach(() => {
@@ -33,7 +13,7 @@ describe('Artworks API', () => {
     it('should call the search endpoint when a query is provided', async () => {
       mockFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        json: () => Promise.resolve(MOCK_API_RESPONSE_LIST),
       });
 
       await getArtworks({ q: 'cats' });
@@ -47,7 +27,7 @@ describe('Artworks API', () => {
     it('should call the list endpoint when no query is provided', async () => {
       mockFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        json: () => Promise.resolve(MOCK_API_RESPONSE_LIST),
       });
 
       await getArtworks();
@@ -81,6 +61,30 @@ describe('Artworks API', () => {
 
     it('should return null when image_id is null', () => {
       expect(getArtworkImageUrl(null)).toBeNull();
+    });
+  });
+
+  describe('getArtwork', () => {
+    it('should return a valid Artwork object when an ID is provided', async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(MOCK_API_RESPONSE_LIST),
+      });
+
+      const result = await getArtwork(123);
+      expect(result).toEqual(MOCK_API_RESPONSE_LIST);
+    });
+
+    it('should throw an error if the network response is not ok', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+      });
+
+      await expect(getArtwork(123)).rejects.toThrow(
+        'An error has occurred: 404 Not Found',
+      );
     });
   });
 });

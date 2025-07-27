@@ -1,5 +1,6 @@
 import type {
-  ArtworksApiParameters,
+  ArtworkDetailApiResponse,
+  ArtworksApiParams,
   ArtworksApiResponse,
 } from './artworks-api.types';
 
@@ -10,7 +11,7 @@ const DEFAULT_FIELDS =
 const IMAGE_URL_SUFFIX = '/full/843,/0/default.jpg';
 
 export async function getArtworks(
-  options: ArtworksApiParameters = {},
+  options: ArtworksApiParams = {},
 ): Promise<ArtworksApiResponse> {
   const parameters = new URLSearchParams();
   for (const [key, value] of Object.entries(options)) {
@@ -40,4 +41,16 @@ export function getArtworkImageUrl(imageId: string | null): string | null {
   }
 
   return `${IIIF_BASE_URL}/${imageId}${IMAGE_URL_SUFFIX}`;
+}
+
+export async function getArtwork(
+  id: number,
+): Promise<ArtworkDetailApiResponse> {
+  const url = `${BASE_URL}/artworks/${id}`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    const message = `An error has occurred: ${response.status} ${response.statusText}`;
+    throw new Error(message);
+  }
+  return response.json();
 }
