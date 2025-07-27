@@ -5,16 +5,24 @@ import {
   useLoaderData,
   useNavigation,
   useOutlet,
+  useParams,
 } from 'react-router-dom';
 import { Pagination } from '@/features/ui/pagination';
+import { PATHS } from '@/lib/paths';
 
-export function SearchPage() {
+export function CollectionPage() {
   const { artworksResponse, searchTerm } = useLoaderData();
   const navigation = useNavigation();
-  const isLoading = navigation.state === 'loading';
+  const params = useParams();
+  const isLoading = navigation.state === 'loading' && !params.artworkId;
   const outlet = useOutlet();
 
-  const { current_page, total_pages } = artworksResponse.pagination;
+  const { current_page: currentPage, total_pages: totalPages } =
+    artworksResponse.pagination;
+
+  const buildDetailUrl = (artworkId: number) => {
+    return `${PATHS.details(currentPage, artworkId)}${location.search}`;
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -35,14 +43,13 @@ export function SearchPage() {
         <main className={outlet ? 'md:col-span-2' : 'md:col-span-3'}>
           <ArtworksList
             items={artworksResponse.data}
-            isLoading={
-              isLoading && !navigation.location.pathname.includes('/artworks/')
-            }
+            isLoading={isLoading}
+            buildDetailUrl={buildDetailUrl}
           />
 
-          {!isLoading && total_pages > 1 && (
+          {!isLoading && totalPages > 1 && (
             <div className="mt-8">
-              <Pagination currentPage={current_page} totalPages={total_pages} />
+              <Pagination currentPage={currentPage} totalPages={totalPages} />
             </div>
           )}
         </main>

@@ -1,3 +1,4 @@
+import { PATHS } from '@/lib/paths';
 import { Link } from 'react-router-dom';
 
 export function NotFoundPage() {
@@ -9,7 +10,7 @@ export function NotFoundPage() {
         Sorry, the page you are looking for does not exist.
       </p>
       <Link
-        to="/"
+        to={PATHS.collection()}
         className="mt-4 rounded bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700"
       >
         Go Home

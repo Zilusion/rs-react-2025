@@ -2,10 +2,10 @@ import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getArtworks } from '@/api/artworks-api';
 import type { ArtworksApiResponse } from '@/api/artworks-api.types';
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const searchTerm = url.searchParams.get('q') || '';
-  const page = url.searchParams.get('page') || '1';
+  const page = params.page || '1';
 
   const artworksResponse: ArtworksApiResponse = await getArtworks({
     page: Number(page),
@@ -13,5 +13,5 @@ export async function loader({ request }: LoaderFunctionArgs) {
     q: searchTerm,
   });
 
-  return { artworksResponse, searchTerm };
+  return { artworksResponse, searchTerm, currentPage: Number(page) };
 }

@@ -1,9 +1,13 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { SearchPage } from './pages/search-page/index.tsx';
-import { loader as searchPageLoader } from './pages/search-page/loader.ts';
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from 'react-router-dom';
+import { CollectionPage } from './pages/collection-page/index.tsx';
+import { loader as collectionPageLoader } from './pages/collection-page/loader.ts';
 import { ErrorPage } from './pages/error-page/index.tsx';
 import { AboutPage } from './pages/about-page/index.tsx';
 import { NotFoundPage } from './pages/not-found-page/index.tsx';
@@ -22,11 +26,15 @@ const router = createBrowserRouter([
         children: [
           {
             path: '/',
-            element: <SearchPage />,
-            loader: searchPageLoader,
+            element: <Navigate to="/collection/1" replace />,
+          },
+          {
+            path: 'collection/:page',
+            element: <CollectionPage />,
+            loader: collectionPageLoader,
             children: [
               {
-                path: 'artworks/:artworkId',
+                path: ':artworkId',
                 element: <ArtworkDetails />,
                 loader: artworkDetailsLoader,
               },

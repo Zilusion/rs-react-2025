@@ -1,4 +1,5 @@
-import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
+import { PATHS } from '@/lib/paths';
+import { isRouteErrorResponse, Link, useRouteError } from 'react-router-dom';
 
 export function ErrorPage() {
   const error = useRouteError();
@@ -26,6 +27,12 @@ export function ErrorPage() {
       <p className="text-gray-500">
         <i>{errorMessage}</i>
       </p>
+      <Link
+        to={PATHS.collection()}
+        className="mt-4 rounded bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700"
+      >
+        Go Home
+      </Link>
     </div>
   );
 }

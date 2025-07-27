@@ -14,7 +14,7 @@ export function ArtworksSearch({ initialValue }: ArtworksSearchProps) {
 
   return (
     <Form
-      action=""
+      action="/collection/1"
       className="flex items-center gap-2"
       role="search"
       aria-label="Artworks search"

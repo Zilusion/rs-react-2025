@@ -17,7 +17,7 @@ export function ArtworkDetails() {
 
   const isLoading =
     navigation.state === 'loading' &&
-    navigation.location.pathname.includes('/artworks/');
+    navigation.location.pathname.includes('/collection/');
 
   const handleClose = () => {
     navigate(`/?${searchParams.toString()}`);

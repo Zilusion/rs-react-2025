@@ -1,3 +1,4 @@
+import { PATHS } from '@/lib/paths';
 import { Link, useLocation } from 'react-router-dom';
 
 interface PaginationProps {
@@ -15,9 +16,8 @@ export function Pagination({ currentPage, totalPages }: PaginationProps) {
   const hasNextPage = nextPage <= totalPages;
 
   const buildUrl = (page: number) => {
-    const params = new URLSearchParams(location.search);
-    params.set('page', String(page));
-    return `?${params.toString()}`;
+    const searchParams = new URLSearchParams(location.search);
+    return `${PATHS.collection(page)}?${searchParams.toString()}`;
   };
 
   const linkClasses =

@@ -1,3 +1,4 @@
+import { PATHS } from '@/lib/paths';
 import { Link } from 'react-router-dom';
 
 export function AboutPage() {
@@ -19,7 +20,7 @@ export function AboutPage() {
         </a>
         <div className="mt-8">
           <Link
-            to="/"
+            to={PATHS.collection()}
             className="rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
           >
             Back to Search
