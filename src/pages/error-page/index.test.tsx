@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import { PATHS } from '@/lib/paths';
 import type { MockInstance } from 'vitest';
+import { ThemeProvider } from '@/contexts/theme';
 
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
@@ -31,9 +32,11 @@ describe('ErrorPage component', () => {
 
   const renderErrorPage = () => {
     render(
-      <MemoryRouter>
-        <ErrorPage />
-      </MemoryRouter>,
+      <ThemeProvider>
+        <MemoryRouter>
+          <ErrorPage />
+        </MemoryRouter>
+      </ThemeProvider>,
     );
   };
 

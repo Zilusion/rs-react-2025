@@ -1,6 +1,5 @@
 import { Card } from '.';
 import { fireEvent, render, screen } from '@testing-library/react';
-// --- 1. Импортируем наши готовые моки ---
 import {
   MOCK_ARTWORK_WITH_IMAGE,
   MOCK_ARTWORK_WITHOUT_IMAGE,

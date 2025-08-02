@@ -2,13 +2,16 @@ import { render, screen } from '@testing-library/react';
 import { NotFoundPage } from '.';
 import { MemoryRouter } from 'react-router-dom';
 import { PATHS } from '@/lib/paths';
+import { ThemeProvider } from '@/contexts/theme';
 
 describe('NotFoundPage component', () => {
   it('should render all content and the home link correctly', () => {
     render(
-      <MemoryRouter>
-        <NotFoundPage />
-      </MemoryRouter>,
+      <ThemeProvider>
+        <MemoryRouter>
+          <NotFoundPage />
+        </MemoryRouter>
+      </ThemeProvider>,
     );
 
     expect(
