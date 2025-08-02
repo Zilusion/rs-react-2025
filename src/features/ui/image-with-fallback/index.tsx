@@ -26,7 +26,7 @@ export function ImageWithFallback({
   if (shouldShowPlaceholder) {
     return (
       <div
-        className={`flex items-center justify-center bg-gray-100 text-sm text-gray-400 ${className}`}
+        className={`flex items-center justify-center bg-gray-100 text-sm text-gray-400 dark:bg-gray-800 dark:text-gray-500 ${className}`}
       >
         No Image Available
       </div>

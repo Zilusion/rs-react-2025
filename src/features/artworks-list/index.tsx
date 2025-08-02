@@ -30,7 +30,7 @@ export function ArtworksList({
   }
 
   return (
-    <ul className="grid grid-cols-1 gap-6 py-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <ul className="grid grid-cols-1 gap-6 pb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {items.map((artwork) => {
         const detailUrl = buildDetailUrl(artwork.id);
         return (

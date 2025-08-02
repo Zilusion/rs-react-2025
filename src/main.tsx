@@ -15,6 +15,7 @@ import { Layout } from './features/ui/layout/index.tsx';
 import App from './app.tsx';
 import { ArtworkDetails } from './features/artwork-details/index.tsx';
 import { loader as artworkDetailsLoader } from './features/artwork-details/loader.ts';
+import { ThemeProvider } from './contexts/theme';
 
 const router = createBrowserRouter([
   {
@@ -58,7 +59,9 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </StrictMode>,
   );
 } else {
