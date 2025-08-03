@@ -1,10 +1,12 @@
 import { Card } from '.';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import {
   MOCK_ARTWORK_WITH_IMAGE,
   MOCK_ARTWORK_WITHOUT_IMAGE,
   MOCK_ARTWORK_ANOTHER,
 } from '@/__mocks__/artworks';
+import userEvent from '@testing-library/user-event';
+import { useSelectedArtworksStore } from '@/store/selected-artworks';
 
 describe('Card component', () => {
   vi.mock('@/api/artworks-api', () => ({
@@ -66,5 +68,38 @@ describe('Card component', () => {
     expect(
       screen.getByText(MOCK_ARTWORK_ANOTHER.artist_display),
     ).toBeInTheDocument();
+  });
+
+  it('should toggle selection state in the store when checkbox is clicked', async () => {
+    const user = userEvent.setup();
+
+    act(() => {
+      useSelectedArtworksStore.setState({ selectedArtworks: new Map() });
+    });
+
+    render(<Card artwork={MOCK_ARTWORK_WITH_IMAGE} />);
+    const checkbox = screen.getByRole('checkbox', {
+      name: /Select Starry Night/i,
+    });
+
+    expect(checkbox).not.toBeChecked();
+
+    await user.click(checkbox);
+
+    expect(checkbox).toBeChecked();
+    expect(
+      useSelectedArtworksStore
+        .getState()
+        .isSelected(MOCK_ARTWORK_WITH_IMAGE.id),
+    ).toBe(true);
+
+    await user.click(checkbox);
+
+    expect(checkbox).not.toBeChecked();
+    expect(
+      useSelectedArtworksStore
+        .getState()
+        .isSelected(MOCK_ARTWORK_WITH_IMAGE.id),
+    ).toBe(false);
   });
 });
