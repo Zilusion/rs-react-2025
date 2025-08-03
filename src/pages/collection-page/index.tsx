@@ -25,10 +25,10 @@ export function CollectionPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="bg-white shadow-sm">
+    <div className="container mx-auto min-h-screen bg-gray-50 px-4 py-8 transition-colors dark:bg-gray-900">
+      <header className="bg-white shadow-sm transition-colors dark:bg-gray-800">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-6 sm:flex-row">
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-gray-800 transition-colors dark:text-gray-100">
             Search for artworks
           </h1>
           <div className="w-full sm:w-auto">
@@ -37,9 +37,7 @@ export function CollectionPage() {
         </div>
       </header>
 
-      <div
-        className={`container mx-auto grid grid-cols-1 gap-8 px-4 py-8 md:grid-cols-3`}
-      >
+      <div className="container mx-auto grid grid-cols-1 gap-8 py-8 md:grid-cols-3">
         <main className={outlet ? 'md:col-span-2' : 'md:col-span-3'}>
           <ArtworksList
             items={artworksResponse.data}

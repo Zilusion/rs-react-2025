@@ -9,6 +9,7 @@ import { NotFoundPage } from './pages/not-found-page';
 import { ErrorPage } from './pages/error-page';
 import { getArtworks } from '@/api/artworks-api';
 import { MOCK_API_RESPONSE_LIST } from '@/__mocks__/artworks';
+import { ThemeProvider } from './contexts/theme';
 
 vi.mock('@/api/artworks-api');
 
@@ -51,7 +52,11 @@ describe('App component routing integration', () => {
         initialEntries,
       },
     );
-    return render(<RouterProvider router={router} />);
+    return render(
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>,
+    );
   };
 
   beforeEach(() => {
