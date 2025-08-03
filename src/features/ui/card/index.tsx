@@ -1,6 +1,7 @@
 import { getArtworkImageUrl } from '@/api/artworks-api';
 import type { Artwork } from '@/api/artworks-api.types';
 import { ImageWithFallback } from '../image-with-fallback';
+import { useSelectedArtworksStore } from '@/store/selected-artworks';
 
 interface CardProps {
   artwork: Artwork;
@@ -9,8 +10,36 @@ interface CardProps {
 export function Card({ artwork }: CardProps) {
   const imageUrl = getArtworkImageUrl(artwork.image_id);
 
+  const addArtwork = useSelectedArtworksStore((state) => state.addArtwork);
+  const removeArtwork = useSelectedArtworksStore(
+    (state) => state.removeArtwork,
+  );
+  const isSelected = useSelectedArtworksStore((state) =>
+    state.isSelected(artwork.id),
+  );
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    if (isSelected) {
+      removeArtwork(artwork.id);
+    } else {
+      addArtwork(artwork);
+    }
+  };
+
   return (
-    <article className="flex grow flex-col overflow-hidden rounded-xl bg-white shadow-lg transition hover:shadow-2xl dark:bg-gray-900 dark:shadow-black/40">
+    <article className="relative flex grow flex-col overflow-hidden rounded-xl bg-white shadow-lg transition hover:shadow-2xl dark:bg-gray-900 dark:shadow-black/40">
+      <div className="absolute top-2 right-2 z-10">
+        <input
+          type="checkbox"
+          className="h-5 w-5"
+          checked={isSelected}
+          onChange={handleCheckboxChange}
+          onClick={(e) => e.stopPropagation()}
+          aria-label={`Select ${artwork.title}`}
+        />
+      </div>
+
       <div className="flex aspect-[4/3] items-center justify-center bg-gray-100 dark:bg-gray-800">
         <ImageWithFallback
           src={imageUrl}

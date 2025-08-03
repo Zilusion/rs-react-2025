@@ -1,5 +1,6 @@
 import { NavLink, Link, Outlet } from 'react-router-dom';
 import { ThemeSwitcher } from '../theme-switcher';
+import { Flyout } from '@/features/flyout';
 
 export function Layout() {
   const activeLinkStyle = {
@@ -44,6 +45,8 @@ export function Layout() {
       <footer className="p-4 text-center text-sm text-gray-500 transition-colors dark:text-gray-400">
         Art Institute of Chicago API Explorer © 2025
       </footer>
+
+      <Flyout />
     </div>
   );
 }
