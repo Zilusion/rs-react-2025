@@ -13,5 +13,6 @@ export const useArtworkDetails = (artworkId: string | undefined) => {
       return getArtwork(id);
     },
     enabled: !!id,
+    staleTime: 1000 * 60 * 5,
   });
 };
