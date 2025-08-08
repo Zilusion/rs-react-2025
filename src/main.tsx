@@ -16,6 +16,9 @@ import App from './app.tsx';
 import { ArtworkDetails } from './features/artwork-details/index.tsx';
 import { loader as artworkDetailsLoader } from './features/artwork-details/loader.ts';
 import { ThemeProvider } from './contexts/theme';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -59,9 +62,11 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <ThemeProvider>
-        <RouterProvider router={router} />
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </QueryClientProvider>
     </StrictMode>,
   );
 } else {

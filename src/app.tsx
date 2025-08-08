@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { ErrorBoundary } from './features/error-boundary';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 export function App() {
   return (
@@ -11,6 +12,7 @@ export function App() {
       }
     >
       <Outlet />
+      <ReactQueryDevtools initialIsOpen={false} />
     </ErrorBoundary>
   );
 }
