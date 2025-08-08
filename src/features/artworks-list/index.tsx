@@ -6,20 +6,15 @@ import { Link, useParams } from 'react-router-dom';
 interface ArtworksListProps {
   items: Artwork[];
   isLoading: boolean;
-  buildDetailUrl: (artworkId: number) => string;
 }
 
-export function ArtworksList({
-  items,
-  isLoading,
-  buildDetailUrl,
-}: ArtworksListProps) {
+export function ArtworksList({ items, isLoading }: ArtworksListProps) {
   const params = useParams();
   const isDetailViewOpen = !!params.artworkId;
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[200px] items-center justify-center">
+      <div className="sticky top-[50%] flex items-center justify-center">
         <Loader />
       </div>
     );
@@ -32,11 +27,13 @@ export function ArtworksList({
   return (
     <ul className="grid grid-cols-1 gap-6 pb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {items.map((artwork) => {
-        const detailUrl = buildDetailUrl(artwork.id);
         return (
           <li key={artwork.id} className="flex">
             <Link
-              to={detailUrl}
+              to={{
+                pathname: `./${artwork.id}`,
+                search: location.search,
+              }}
               replace={isDetailViewOpen}
               className="flex w-full"
             >
