@@ -10,57 +10,35 @@ import { MemoryRouter } from 'react-router-dom';
 const mockArtworks: Artwork[] = [MOCK_ARTWORK_WITH_IMAGE, MOCK_ARTWORK_ANOTHER];
 
 describe('ArtworksList component', () => {
-  const mockBuildDetailUrl = vi.fn(
-    (artworkId: number) => `/test/url/${artworkId}`,
-  );
-
-  beforeEach(() => {
-    mockBuildDetailUrl.mockClear();
-  });
-
   it('should render the loader when isLoading is true', () => {
     render(
       <MemoryRouter>
-        <ArtworksList
-          items={[]}
-          isLoading={true}
-          buildDetailUrl={mockBuildDetailUrl}
-        />
+        <ArtworksList items={[]} isLoading={true} />
       </MemoryRouter>,
     );
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it('should render a list of artworks and call buildDetailUrl for each item', () => {
+  it('should render a list of artworks with correct relative links', () => {
     render(
-      <MemoryRouter>
-        <ArtworksList
-          items={mockArtworks}
-          isLoading={false}
-          buildDetailUrl={mockBuildDetailUrl}
-        />
+      <MemoryRouter initialEntries={['/collection/5?q=night']}>
+        <ArtworksList items={mockArtworks} isLoading={false} />
       </MemoryRouter>,
     );
 
     expect(screen.getAllByRole('listitem')).toHaveLength(mockArtworks.length);
-    expect(mockBuildDetailUrl).toHaveBeenCalledTimes(mockArtworks.length);
-    expect(mockBuildDetailUrl).toHaveBeenCalledWith(mockArtworks[0].id);
-    expect(mockBuildDetailUrl).toHaveBeenCalledWith(mockArtworks[1].id);
 
     const link = screen.getByRole('link', {
-      name: new RegExp(mockArtworks[0].title),
+      name: new RegExp(MOCK_ARTWORK_WITH_IMAGE.title),
     });
-    expect(link).toHaveAttribute('href', `/test/url/${mockArtworks[0].id}`);
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('href', `/${MOCK_ARTWORK_WITH_IMAGE.id}`);
   });
 
   it('should render a message when there are no artworks', () => {
     render(
       <MemoryRouter>
-        <ArtworksList
-          items={[]}
-          isLoading={false}
-          buildDetailUrl={mockBuildDetailUrl}
-        />
+        <ArtworksList items={[]} isLoading={false} />
       </MemoryRouter>,
     );
     expect(
