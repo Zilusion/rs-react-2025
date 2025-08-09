@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { createMemoryRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from './app';
 import { Layout } from './features/ui/layout';
 import { CollectionPage } from './pages/collection-page';
-import { loader as collectionLoader } from './pages/collection-page/loader';
 import { AboutPage } from './pages/about-page';
 import { NotFoundPage } from './pages/not-found-page';
 import { ErrorPage } from './pages/error-page';
@@ -17,6 +17,10 @@ describe('App component routing integration', () => {
   const mockedGetArtworks = vi.mocked(getArtworks);
 
   const setupRouter = (initialEntries: string[]) => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
     const router = createMemoryRouter(
       [
         {
@@ -28,12 +32,11 @@ describe('App component routing integration', () => {
               children: [
                 {
                   path: '/',
-                  element: <div>Home Page Placeholder</div>,
+                  element: <Navigate to="/collection/1" replace />,
                 },
                 {
-                  path: 'collection/:page',
+                  path: 'collection/:page?',
                   element: <CollectionPage />,
-                  loader: collectionLoader,
                 },
                 {
                   path: 'about',
@@ -52,10 +55,13 @@ describe('App component routing integration', () => {
         initialEntries,
       },
     );
+
     return render(
-      <ThemeProvider>
-        <RouterProvider router={router} />
-      </ThemeProvider>,
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </QueryClientProvider>,
     );
   };
 
@@ -64,12 +70,13 @@ describe('App component routing integration', () => {
     mockedGetArtworks.mockResolvedValue(MOCK_API_RESPONSE_LIST);
   });
 
-  it('should render the collection page inside the layout on the root path', async () => {
+  it('should render the collection page with data inside the layout', async () => {
     setupRouter(['/collection/1']);
 
     expect(
       await screen.findByText(MOCK_API_RESPONSE_LIST.data[0].title),
     ).toBeInTheDocument();
+
     expect(
       screen.getByRole('link', { name: /Art Gallery/i }),
     ).toBeInTheDocument();

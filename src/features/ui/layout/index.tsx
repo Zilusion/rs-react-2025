@@ -9,7 +9,7 @@ export function Layout() {
 
   return (
     <div className="grid min-h-screen grid-rows-[auto_1fr_auto] bg-gray-50 transition-colors dark:bg-gray-900">
-      <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-md transition-colors dark:border-gray-700 dark:bg-gray-800/80">
+      <header className="sticky top-0 z-20 border-b border-gray-200 bg-white/80 backdrop-blur-md transition-colors dark:border-gray-700 dark:bg-gray-800/80">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link
             to="/"

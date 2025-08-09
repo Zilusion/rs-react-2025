@@ -37,6 +37,8 @@ export function Card({ artwork }: CardProps) {
           onChange={handleCheckboxChange}
           onClick={(e) => e.stopPropagation()}
           aria-label={`Select ${artwork.title}`}
+          name={`select-artwork-${artwork.id}`}
+          id={`select-artwork-${artwork.id}`}
         />
       </div>
 

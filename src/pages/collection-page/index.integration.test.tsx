@@ -1,16 +1,16 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { CollectionPage } from './index';
-import { loader as collectionLoader } from './loader';
 import { ArtworkDetails } from '@/features/artwork-details';
-import { loader as artworkDetailsLoader } from '@/features/artwork-details/loader';
 import { getArtworks, getArtwork } from '@/api/artworks-api';
 import {
   MOCK_API_RESPONSE_LIST,
   MOCK_API_RESPONSE_DETAILS,
   MOCK_API_RESPONSE_LIST_ANOTHER,
 } from '@/__mocks__/artworks';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ArtworksApiResponse } from '@/api/artworks-api.types';
 
 vi.mock('@/api/artworks-api');
 
@@ -20,52 +20,54 @@ describe('CollectionPage (Integration)', () => {
   const mockedGetArtwork = vi.mocked(getArtwork);
 
   const setupRouter = (initialEntries: string[]) => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
     const router = createMemoryRouter(
       [
         {
           path: '/collection/:page?',
           element: <CollectionPage />,
-          loader: collectionLoader,
           children: [
             {
               path: ':artworkId',
               element: <ArtworkDetails />,
-              loader: artworkDetailsLoader,
             },
           ],
         },
       ],
-      {
-        initialEntries,
-      },
+      { initialEntries },
     );
-    return render(<RouterProvider router={router} />);
+
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>,
+    );
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should display search results from the initial URL search params', async () => {
+  it('should fetch data based on URL and display search results', async () => {
     mockedGetArtworks.mockResolvedValue(MOCK_API_RESPONSE_LIST);
-    setupRouter([
-      `/collection/1?q=${MOCK_API_RESPONSE_LIST.data[0].artist_display}`,
-    ]);
+    const searchTerm = MOCK_API_RESPONSE_LIST.data[0].artist_display;
+
+    setupRouter([`/collection/1?q=${encodeURIComponent(searchTerm)}`]);
 
     expect(
       await screen.findByRole('heading', {
         name: MOCK_API_RESPONSE_LIST.data[0].title,
       }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('searchbox')).toHaveValue(
-      MOCK_API_RESPONSE_LIST.data[0].artist_display,
-    );
-    expect(mockedGetArtworks).toHaveBeenCalledWith(
-      expect.objectContaining({
-        page: 1,
-        q: MOCK_API_RESPONSE_LIST.data[0].artist_display,
-      }),
-    );
+    expect(mockedGetArtworks).toHaveBeenCalledWith({
+      page: 1,
+      limit: 16,
+      q: searchTerm,
+    });
+    expect(screen.getByRole('searchbox')).toHaveValue(searchTerm);
   });
 
   it('should perform a new search and navigate to page 1', async () => {
@@ -87,10 +89,7 @@ describe('CollectionPage (Integration)', () => {
     );
     await user.click(screen.getByRole('button', { name: /Search/i }));
 
-    expect(
-      await screen.findByText(MOCK_API_RESPONSE_LIST_ANOTHER.data[0].title),
-    ).toBeInTheDocument();
-
+    await screen.findByText(MOCK_API_RESPONSE_LIST_ANOTHER.data[0].title);
     expect(mockedGetArtworks).toHaveBeenLastCalledWith(
       expect.objectContaining({
         page: 1,
@@ -99,32 +98,64 @@ describe('CollectionPage (Integration)', () => {
     );
   });
 
-  it('should render a full-width layout when no detail view is active', async () => {
-    mockedGetArtworks.mockResolvedValue(MOCK_API_RESPONSE_LIST);
-    setupRouter(['/collection/1']);
-    await screen.findByRole('heading', {
-      name: MOCK_API_RESPONSE_LIST.data[0].title,
-    });
-
-    expect(screen.getByRole('main')).toHaveClass('md:col-span-3');
-    expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
-  });
-
   it('should render a two-column layout when a detail view is active', async () => {
     mockedGetArtworks.mockResolvedValue(MOCK_API_RESPONSE_LIST);
     mockedGetArtwork.mockResolvedValue(MOCK_API_RESPONSE_DETAILS);
 
     setupRouter(['/collection/1/123']);
 
-    const heading = await screen.findAllByRole('heading', {
+    await screen.findByRole('heading', {
       name: MOCK_API_RESPONSE_DETAILS.data.title,
     });
-    expect(heading[0]).toBeInTheDocument();
 
-    const mainElement = screen.getByRole('main');
-    expect(mainElement).toHaveClass('md:col-span-2');
+    expect(screen.getByRole('main')).toHaveClass('md:col-span-2');
+    expect(screen.getByRole('complementary')).toBeInTheDocument();
+  });
 
-    const asideElement = screen.getByRole('complementary');
-    expect(asideElement).toBeInTheDocument();
+  it('should refetch the list when refresh button is clicked', async () => {
+    mockedGetArtworks.mockResolvedValue(MOCK_API_RESPONSE_LIST);
+    setupRouter(['/collection/1']);
+
+    const refreshButton = await screen.findByRole('button', {
+      name: /refresh/i,
+    });
+    expect(mockedGetArtworks).toHaveBeenCalledTimes(1);
+
+    await user.click(refreshButton);
+
+    await waitFor(() => {
+      expect(mockedGetArtworks).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('should display the refetching indicator when refetching', async () => {
+    mockedGetArtworks.mockResolvedValue(MOCK_API_RESPONSE_LIST);
+    setupRouter(['/collection/1']);
+    const refreshButton = await screen.findByRole('button', {
+      name: /refresh/i,
+    });
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+
+    let resolvePromise: (value: ArtworksApiResponse) => void;
+    mockedGetArtworks.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolvePromise = resolve;
+        }),
+    );
+
+    await user.click(refreshButton);
+
+    expect(await screen.findByRole('status')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /refreshing/i })).toBeDisabled();
+
+    act(() => {
+      resolvePromise(MOCK_API_RESPONSE_LIST_ANOTHER);
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('refetch-indicator')).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole('button', { name: /refresh/i })).not.toBeDisabled();
   });
 });

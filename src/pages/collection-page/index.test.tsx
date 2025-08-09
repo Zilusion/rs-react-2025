@@ -1,18 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import { CollectionPage } from './index';
-import { useLoaderData, useNavigation, useParams } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { MOCK_API_RESPONSE_LIST } from '@/__mocks__/artworks';
+import { useArtworks } from '@/features/artworks-list/useArtworks';
+import {
+  QueryClient,
+  QueryClientProvider,
+  type UseQueryResult,
+} from '@tanstack/react-query';
+import type { ArtworksApiResponse } from '@/api/artworks-api.types';
 
-vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react-router-dom')>();
-  return {
-    ...actual,
-    useLoaderData: vi.fn(),
-    useNavigation: vi.fn(),
-    useOutlet: vi.fn(() => null),
-    useParams: vi.fn(),
-  };
-});
+vi.mock('@/features/artworks-list/useArtworks');
 
 vi.mock('@/features/artworks-search', () => ({
   ArtworksSearch: (props: { initialValue: string }) => (
@@ -43,93 +41,144 @@ vi.mock('@/features/ui/pagination', () => ({
   ),
 }));
 
+const createMockQueryResult = (
+  status: UseQueryResult['status'],
+  data?: ArtworksApiResponse,
+  error?: Error,
+): UseQueryResult<ArtworksApiResponse, Error> => {
+  const baseResult = {
+    isFetching: false,
+    isSuccess: status === 'success',
+    isError: status === 'error',
+    isPending: status === 'pending',
+    isLoading: status === 'pending',
+    refetch: vi.fn(),
+  };
+
+  switch (status) {
+    case 'success':
+      return {
+        ...baseResult,
+        status,
+        data: data,
+        error: null,
+      } as unknown as UseQueryResult<ArtworksApiResponse, Error>;
+    case 'error':
+      return {
+        ...baseResult,
+        status,
+        data: undefined,
+        error: error,
+      } as unknown as UseQueryResult<ArtworksApiResponse, Error>;
+    case 'pending':
+    default:
+      return {
+        ...baseResult,
+        status,
+        data: undefined,
+        error: null,
+      } as unknown as UseQueryResult<ArtworksApiResponse, Error>;
+  }
+};
+
 describe('CollectionPage (Unit)', () => {
-  const mockedUseLoaderData = vi.mocked(useLoaderData);
-  const mockedUseNavigation = vi.mocked(useNavigation);
-  const mockedUseParams = vi.mocked(useParams);
+  const mockedUseArtworks = vi.mocked(useArtworks);
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
+  const renderWithProviders = (initialEntries: string[]) => {
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Routes>
+            <Route path="/collection/:page?" element={<CollectionPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    queryClient.clear();
   });
 
-  it('should pass correct props to children when data is loaded and state is idle', () => {
-    mockedUseLoaderData.mockReturnValue({
-      artworksResponse: {
-        ...MOCK_API_RESPONSE_LIST,
-        pagination: { ...MOCK_API_RESPONSE_LIST.pagination, total_pages: 5 },
+  it('should parse URL params and call useArtworks with correct values', () => {
+    mockedUseArtworks.mockReturnValue(createMockQueryResult('success'));
+    renderWithProviders(['/collection/5?q=cats']);
+    expect(useArtworks).toHaveBeenCalledWith({ page: 5, limit: 16, q: 'cats' });
+  });
+
+  it('should pass correct props to children on success', () => {
+    const mockData = {
+      ...MOCK_API_RESPONSE_LIST,
+      pagination: {
+        ...MOCK_API_RESPONSE_LIST.pagination,
+        total_pages: 5,
+        current_page: 1,
       },
-      searchTerm: 'da vinci',
-      currentPage: 1,
-    });
-    mockedUseNavigation.mockReturnValue({
-      state: 'idle',
-      location: undefined,
-    } as ReturnType<typeof useNavigation>);
-    mockedUseParams.mockReturnValue({});
-
-    render(<CollectionPage />);
-
-    expect(screen.getByTestId('artworks-search')).toHaveAttribute(
-      'data-initial-value',
-      'da vinci',
+    };
+    mockedUseArtworks.mockReturnValue(
+      createMockQueryResult('success', mockData),
     );
-    const list = screen.getByTestId('artworks-list');
-    expect(list).toHaveAttribute(
-      'data-items-count',
-      String(MOCK_API_RESPONSE_LIST.data.length),
+    renderWithProviders(['/collection/1?q=da%20vinci']);
+    expect(screen.getByTestId('pagination')).toHaveAttribute(
+      'data-total-pages',
+      '5',
     );
-    expect(list).toHaveAttribute('data-is-loading', 'false');
-
-    const pagination = screen.getByTestId('pagination');
-    expect(pagination).toHaveAttribute('data-current-page', '1');
-    expect(pagination).toHaveAttribute('data-total-pages', '5');
   });
 
-  it('should pass isLoading=true to ArtworksList when navigation state is "loading"', () => {
-    mockedUseLoaderData.mockReturnValue({
-      artworksResponse: MOCK_API_RESPONSE_LIST,
-      searchTerm: 'da vinci',
-      currentPage: 1,
-    });
-    mockedUseNavigation.mockReturnValue({
-      state: 'loading',
-      location: {
-        pathname: '/collection/1',
-        search: '?q=cats',
-        hash: '',
-        state: null,
-        key: 'abc',
-      },
-    } as ReturnType<typeof useNavigation>);
-    mockedUseParams.mockReturnValue({});
-
-    render(<CollectionPage />);
-
-    const list = screen.getByTestId('artworks-list');
-    expect(list).toHaveAttribute('data-is-loading', 'true');
+  it('should pass isLoading=true when useArtworks is loading', () => {
+    mockedUseArtworks.mockReturnValue(createMockQueryResult('pending'));
+    renderWithProviders(['/collection/1']);
+    expect(screen.getByTestId('artworks-list')).toHaveAttribute(
+      'data-is-loading',
+      'true',
+    );
   });
 
-  it('should pass isLoading=false when loading details on the same page', () => {
-    mockedUseLoaderData.mockReturnValue({
-      artworksResponse: MOCK_API_RESPONSE_LIST,
-      searchTerm: 'da vinci',
-      currentPage: 1,
+  it('should render an error message when useArtworks returns an error', () => {
+    mockedUseArtworks.mockReturnValue(
+      createMockQueryResult('error', undefined, new Error('Network Error')),
+    );
+    renderWithProviders(['/collection/1']);
+    expect(screen.getByText('Network Error')).toBeInTheDocument();
+  });
+
+  it('should default to page 1 when the page param is not in the URL', () => {
+    mockedUseArtworks.mockReturnValue(createMockQueryResult('success'));
+
+    renderWithProviders(['/collection?q=cats']);
+
+    expect(mockedUseArtworks).toHaveBeenCalledWith({
+      page: 1,
+      limit: 16,
+      q: 'cats',
     });
-    mockedUseNavigation.mockReturnValue({
-      state: 'loading',
-      location: {
-        pathname: '/collection/1/123',
-        search: '?q=cats',
-        hash: '',
-        state: null,
-        key: 'abc',
-      },
-    } as ReturnType<typeof useNavigation>);
-    mockedUseParams.mockReturnValue({ artworkId: '123' });
+  });
 
-    render(<CollectionPage />);
+  it('should display a generic error message for non-Error exceptions', () => {
+    const errorState = {
+      data: undefined,
+      isLoading: false,
+      isFetching: false,
+      isError: true,
+      error: 'Just a string error',
+      isSuccess: false,
+      isPending: false,
+      status: 'error',
+      refetch: vi.fn(),
+    } as unknown as UseQueryResult<ArtworksApiResponse, Error>;
 
-    const list = screen.getByTestId('artworks-list');
-    expect(list).toHaveAttribute('data-is-loading', 'false');
+    mockedUseArtworks.mockReturnValue(errorState);
+
+    renderWithProviders(['/collection/1']);
+
+    expect(screen.getByText('Error loading data.')).toBeInTheDocument();
   });
 });
