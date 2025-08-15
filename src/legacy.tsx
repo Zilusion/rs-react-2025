@@ -1,6 +1,4 @@
 import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
 import {
   createBrowserRouter,
   Navigate,
@@ -13,10 +11,6 @@ import { NotFoundPage } from './pages/not-found-page/index.tsx';
 import { Layout } from './features/ui/layout/index.tsx';
 import App from './app.tsx';
 import { ArtworkDetails } from './features/artwork-details/index.tsx';
-import { ThemeProvider } from './contexts/theme';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -54,17 +48,10 @@ const router = createBrowserRouter([
   },
 ]);
 
-const rootElement = document.getElementById('root');
-if (rootElement) {
-  createRoot(rootElement).render(
+export default function LegacyApp() {
+  return (
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <RouterProvider router={router} />
-        </ThemeProvider>
-      </QueryClientProvider>
-    </StrictMode>,
+      <RouterProvider router={router} />
+    </StrictMode>
   );
-} else {
-  throw new Error("Root element with id 'root' not found");
 }
