@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { type ReactNode } from 'react';
 import { Providers } from './providers.tsx';
 import './globals.css';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 export const metadata: Metadata = {
   title: 'Artworks Search | AIC',
@@ -16,7 +17,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <ReactQueryDevtools initialIsOpen={false} />
+        </Providers>
       </body>
     </html>
   );

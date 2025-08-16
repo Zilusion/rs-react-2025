@@ -1,7 +1,7 @@
 import { PATHS } from '@/lib/paths';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
-export function AboutPage() {
+export default function AboutPage() {
   return (
     <div className="container mx-auto flex h-full flex-col justify-center">
       <div className="rounded-lg bg-blue-100 p-8 text-center shadow-md dark:bg-gray-800 dark:shadow-lg">
@@ -22,7 +22,7 @@ export function AboutPage() {
         </a>
         <div className="mt-8">
           <Link
-            to={PATHS.collection()}
+            href={PATHS.collection()}
             className="rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"
           >
             Back to Search

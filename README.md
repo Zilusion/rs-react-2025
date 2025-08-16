@@ -89,3 +89,140 @@
 - **`pnpm fix` / `npm run fix`**: Попытка автоматического исправления всех ошибок.
 - **`pnpm test` / `npm run test`**: Запуск тестов в watch-режиме.
 - **`pnpm test:coverage` / `npm run test:coverage`**: Запуск тестов с генерацией отчета о покрытии.
+
+```
+rs-react-2025
+├─ .husky
+│  ├─ commit-msg
+│  ├─ pre-commit
+│  ├─ pre-push
+│  └─ _
+│     ├─ applypatch-msg
+│     ├─ commit-msg
+│     ├─ h
+│     ├─ husky.sh
+│     ├─ post-applypatch
+│     ├─ post-checkout
+│     ├─ post-commit
+│     ├─ post-merge
+│     ├─ post-rewrite
+│     ├─ pre-applypatch
+│     ├─ pre-auto-gc
+│     ├─ pre-commit
+│     ├─ pre-merge-commit
+│     ├─ pre-push
+│     ├─ pre-rebase
+│     └─ prepare-commit-msg
+├─ .lintstagedrc.js
+├─ .prettierrc
+├─ .stylelintrc.json
+├─ commitlint.config.js
+├─ eslint.config.js
+├─ next.config.js
+├─ package-lock.json
+├─ package.json
+├─ pnpm-lock.yaml
+├─ postcss.config.js
+├─ README.md
+├─ src
+│  ├─ api
+│  │  ├─ artworks-api.test.ts
+│  │  ├─ artworks-api.ts
+│  │  └─ artworks-api.types.ts
+│  ├─ app
+│  │  ├─ (main)
+│  │  │  ├─ collection
+│  │  │  │  └─ [page]
+│  │  │  │     ├─ @details
+│  │  │  │     │  ├─ page.tsx
+│  │  │  │     │  └─ [artworkId]
+│  │  │  │     │     └─ page.tsx
+│  │  │  │     ├─ @list
+│  │  │  │     │  └─ page.tsx
+│  │  │  │     └─ layout.tsx
+│  │  │  └─ layout.tsx
+│  │  ├─ favicon.ico
+│  │  ├─ globals.css
+│  │  ├─ layout.tsx
+│  │  └─ providers.tsx
+│  ├─ app.test.tsx
+│  ├─ app.tsx
+│  ├─ contexts
+│  │  └─ theme
+│  │     ├─ context.ts
+│  │     ├─ hook.test.ts
+│  │     ├─ hook.ts
+│  │     ├─ index.ts
+│  │     ├─ provider.test.tsx
+│  │     └─ provider.tsx
+│  ├─ features
+│  │  ├─ artwork-details
+│  │  │  ├─ index.test.tsx
+│  │  │  ├─ index.tsx
+│  │  │  ├─ useArtworkDetails.test.ts
+│  │  │  └─ useArtworkDetails.ts
+│  │  ├─ artworks-list
+│  │  │  ├─ index.test.tsx
+│  │  │  ├─ index.tsx
+│  │  │  ├─ useArtworks.test.ts
+│  │  │  └─ useArtworks.ts
+│  │  ├─ artworks-search
+│  │  │  ├─ index.test.tsx
+│  │  │  └─ index.tsx
+│  │  ├─ error-boundary
+│  │  │  ├─ index.test.tsx
+│  │  │  └─ index.tsx
+│  │  ├─ flyout
+│  │  │  ├─ index.test.tsx
+│  │  │  └─ index.tsx
+│  │  └─ ui
+│  │     ├─ card
+│  │     │  ├─ index.test.tsx
+│  │     │  └─ index.tsx
+│  │     ├─ image-with-fallback
+│  │     │  └─ index.tsx
+│  │     ├─ layout
+│  │     │  ├─ index.test.tsx
+│  │     │  └─ index.tsx
+│  │     ├─ loader
+│  │     │  ├─ index.test.tsx
+│  │     │  └─ index.tsx
+│  │     ├─ pagination
+│  │     │  ├─ index.test.tsx
+│  │     │  └─ index.tsx
+│  │     └─ theme-switcher
+│  │        ├─ index.test.tsx
+│  │        └─ index.tsx
+│  ├─ hooks
+│  │  ├─ use-local-storage-state.test.ts
+│  │  └─ use-local-storage-state.ts
+│  ├─ legacy.tsx
+│  ├─ lib
+│  │  ├─ csv-utils.test.ts
+│  │  ├─ csv-utils.ts
+│  │  ├─ paths.test.ts
+│  │  └─ paths.ts
+│  ├─ pages
+│  │  ├─ about-page
+│  │  │  ├─ index.test.tsx
+│  │  │  └─ index.tsx
+│  │  ├─ collection-page
+│  │  │  ├─ index.integration.test.tsx
+│  │  │  ├─ index.test.tsx
+│  │  │  └─ index.tsx
+│  │  ├─ error-page
+│  │  │  ├─ index.test.tsx
+│  │  │  └─ index.tsx
+│  │  └─ not-found-page
+│  │     ├─ index.test.tsx
+│  │     └─ index.tsx
+│  ├─ store
+│  │  ├─ selected-artworks.test.ts
+│  │  └─ selected-artworks.ts
+│  └─ __mocks__
+│     └─ artworks.ts
+├─ tsconfig.json
+├─ vitest.config.js
+└─ vitest.setup.ts
+
+```
