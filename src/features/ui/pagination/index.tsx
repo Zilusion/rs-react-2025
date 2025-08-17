@@ -1,8 +1,10 @@
 'use client';
 
 import { Link } from '@/i18n/navigation';
+import { PATHS } from '@/lib/paths';
 import { useTranslations } from 'next-intl';
 import { useSearchParams, useParams } from 'next/navigation';
+import { useCallback } from 'react';
 
 interface PaginationProps {
   totalPages: number;
@@ -22,10 +24,13 @@ export function Pagination({ totalPages }: PaginationProps) {
 
   const t = useTranslations('Pagination');
 
-  const buildUrl = (page: number) => {
-    const newParams = new URLSearchParams(searchParams?.toString());
-    return `/collection/${page}?${newParams.toString()}`;
-  };
+   const buildUrl = useCallback(
+     (page: number) => {
+       const newParams = new URLSearchParams(searchParams?.toString());
+       return `${PATHS.collection(page)}?${newParams.toString()}`;
+     },
+     [searchParams],
+   );
 
   const linkClasses =
     'rounded border bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-200 duration-300 ease-in-out ' +

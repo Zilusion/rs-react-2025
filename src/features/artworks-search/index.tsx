@@ -3,6 +3,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { PATHS } from '@/lib/paths';
 
 export function ArtworksSearch() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export function ArtworksSearch() {
       params.set('q', searchTerm);
     }
 
-    router.push(`/collection/1?${params.toString()}`);
+    router.push(`${PATHS.collection()}?${params.toString()}`);
   };
 
   const t = useTranslations('Search');
