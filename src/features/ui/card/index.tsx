@@ -1,3 +1,5 @@
+'use client';
+
 import { getArtworkImageUrl } from '@/api/artworks-api';
 import type { Artwork } from '@/api/artworks-api.types';
 import { ImageWithFallback } from '../image-with-fallback';
@@ -46,6 +48,8 @@ export function Card({ artwork }: CardProps) {
         <ImageWithFallback
           src={imageUrl}
           alt={artwork.title}
+          width={400}
+          height={300}
           className="h-full w-full object-cover"
         />
       </div>

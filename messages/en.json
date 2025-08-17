@@ -1,0 +1,60 @@
+{
+  "Layout": {
+    "search": "Search",
+    "about": "About",
+    "artGallery": "Art Gallery",
+    "footer": "Art Institute of Chicago API Explorer"
+  },
+  "CollectionPage": {
+    "title": "Search for artworks",
+    "noResults": "No results found for your query.",
+    "refresh": "Refresh"
+  },
+  "Search": {
+    "title": "Search",
+    "placeholder": "Enter search query...",
+    "aria": {
+      "form": "Search form",
+      "input": "Enter search query",
+      "submit": "Search"
+    }
+  },
+  "Image": {
+    "noImage": "No image available"
+  },
+  "Details": {
+    "close": "Close details",
+    "details": "Details",
+    "dimensions": "Dimensions",
+    "medium": "Medium",
+    "refresh": "Refresh"
+  },
+  "Pagination": {
+    "pageOf": "Page {currentPage} of {totalPages}",
+    "previous": "← Previous",
+    "next": "Next →"
+  },
+  "AboutPage": {
+    "title": "About This Project",
+    "description": "This application was created by Sudorgin Daniil as part of the React course from RS School.",
+    "courseLink": "Learn more about the RS School React Course",
+    "backToSearch": "Back to Search"
+  },
+  "NotFoundPage": {
+    "title": "404",
+    "subtitle": "Page Not Found",
+    "description": "Sorry, the page you are looking for does not exist.",
+    "goHome": "Go Home"
+  },
+  "GlobalError": {
+    "title": "Oops! Something went wrong.",
+    "description": "Sorry, an unexpected error has occurred.",
+    "reset": "Try Again"
+  },
+  "Flyout": {
+    "itemsSelected": "{count, plural, =1 {# item selected} other {# items selected}}",
+    "download": "Download",
+    "unselectAll": "Unselect all",
+    "generating": "Generating..."
+  }
+}

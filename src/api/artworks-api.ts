@@ -13,44 +13,57 @@ const IMAGE_URL_SUFFIX = '/full/843,/0/default.jpg';
 export async function getArtworks(
   options: ArtworksApiParams = {},
 ): Promise<ArtworksApiResponse> {
-  const parameters = new URLSearchParams();
-  for (const [key, value] of Object.entries(options)) {
-    if (value) {
-      parameters.append(key, value.toString());
+  try {
+    const parameters = new URLSearchParams();
+    for (const [key, value] of Object.entries(options)) {
+      if (value) {
+        parameters.append(key, value.toString());
+      }
     }
-  }
-  if (!options.fields) {
-    parameters.append('fields', DEFAULT_FIELDS);
-  }
+    if (!options.fields) {
+      parameters.append('fields', DEFAULT_FIELDS);
+    }
 
-  const endpoint = parameters.has('q')
-    ? `${BASE_URL}/artworks/search`
-    : `${BASE_URL}/artworks`;
-  const url = `${endpoint}?${parameters.toString()}`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    const message = `An error has occurred: ${response.status} ${response.statusText}`;
-    throw new Error(message);
+    const endpoint = parameters.has('q')
+      ? `${BASE_URL}/artworks/search`
+      : `${BASE_URL}/artworks`;
+    const url = `${endpoint}?${parameters.toString()}`;
+    const response = await fetch(url, { next: { revalidate: 3600 } });
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status} ${response.statusText}`;
+      throw new Error(message);
+    }
+    return response.json();
+  } catch (error) {
+    throw new Error(`Failed to fetch artworks: ${(error as Error).message}`);
   }
-  return response.json();
 }
 
 export function getArtworkImageUrl(imageId: string | null): string | null {
-  if (!imageId) {
-    return null;
+  try {
+    if (!imageId) {
+      return null;
+    }
+    return `${IIIF_BASE_URL}/${imageId}${IMAGE_URL_SUFFIX}`;
+  } catch (error) {
+    throw new Error(
+      `Failed to get artwork image URL: ${(error as Error).message}`,
+    );
   }
-
-  return `${IIIF_BASE_URL}/${imageId}${IMAGE_URL_SUFFIX}`;
 }
 
 export async function getArtwork(
   id: number,
 ): Promise<ArtworkDetailApiResponse> {
-  const url = `${BASE_URL}/artworks/${id}`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    const message = `An error has occurred: ${response.status} ${response.statusText}`;
-    throw new Error(message);
+  try {
+    const url = `${BASE_URL}/artworks/${id}`;
+    const response = await fetch(url, { next: { revalidate: 3600 } });
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status} ${response.statusText}`;
+      throw new Error(message);
+    }
+    return response.json();
+  } catch (error) {
+    throw new Error(`Failed to fetch artwork: ${(error as Error).message}`);
   }
-  return response.json();
 }
