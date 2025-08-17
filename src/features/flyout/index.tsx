@@ -2,6 +2,7 @@
 
 import { generateAndDownloadCsv } from '@/app/actions';
 import { useSelectedArtworksStore } from '@/store/selected-artworks';
+import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 
 export function Flyout() {
@@ -12,6 +13,8 @@ export function Flyout() {
   const count = selectedArtworks.size;
 
   const [isPending] = useTransition();
+
+  const t = useTranslations('Flyout');
 
   const handleDownload = async () => {
     const artworksArray = Array.from(selectedArtworks.values());
@@ -34,22 +37,20 @@ export function Flyout() {
   return (
     <div className="fixed bottom-4 left-1/2 z-20 w-11/12 max-w-2xl -translate-x-1/2 rounded-lg bg-blue-600 px-6 py-4 text-white shadow-lg">
       <div className="flex items-center justify-between">
-        <span className="font-medium">
-          {count} {count === 1 ? 'item' : 'items'} selected
-        </span>
+        <span className="font-medium">{t('itemsSelected', { count })}</span>
         <div className="flex gap-4">
           <button
             onClick={handleDownload}
             disabled={isPending}
             className="rounded-md bg-white/20 px-4 py-2 transition hover:bg-white/30"
           >
-            Download
+            {isPending ? t('generating') : t('download')}
           </button>
           <button
             onClick={clearAll}
             className="rounded-md bg-white/20 px-4 py-2 transition hover:bg-white/30"
           >
-            Unselect all
+            {t('unselectAll')}
           </button>
         </div>
       </div>

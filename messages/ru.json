@@ -1,0 +1,60 @@
+{
+  "Layout": {
+    "search": "Поиск",
+    "about": "О проекте",
+    "artGallery": "Галерея",
+    "footer": "Обозреватель API Художественного института Чикаго"
+  },
+  "CollectionPage": {
+    "title": "Поиск произведений искусства",
+    "noResults": "По вашему запросу ничего не найдено.",
+    "refresh": "Обновить"
+  },
+  "Search": {
+    "title": "Поиск",
+    "placeholder": "Введите запрос для поиска...",
+    "aria": {
+      "form": "Форма поиска",
+      "input": "Введите запрос для поиска",
+      "submit": "Поиск"
+    }
+  },
+  "Image": {
+    "noImage": "Изображение недоступно"
+  },
+  "Details": {
+    "close": "Закрыть детали",
+    "details": "Детали",
+    "dimensions": "Размеры",
+    "medium": "Материалы",
+    "refresh": "Обновить"
+  },
+  "Pagination": {
+    "pageOf": "Страница {currentPage} из {totalPages}",
+    "previous": "← Назад",
+    "next": "Вперед →"
+  },
+  "AboutPage": {
+    "title": "Об этом проекте",
+    "description": "Это приложение было создано Судоргиным Даниилом в рамках курса по React от RS School.",
+    "courseLink": "Узнать больше о курсе RS School React",
+    "backToSearch": "Вернуться к поиску"
+  },
+  "NotFoundPage": {
+    "title": "404",
+    "subtitle": "Страница не найдена",
+    "description": "Извините, страница, которую вы ищете, не существует.",
+    "goHome": "На главную"
+  },
+  "GlobalError": {
+    "title": "Ой! Что-то пошло не так.",
+    "description": "Извините, произошла непредвиденная ошибка.",
+    "reset": "Попробовать снова"
+  },
+  "Flyout": {
+    "itemsSelected": "{count, plural, one {# элемент выбран} few {# элемента выбрано} many {# элементов выбрано} other {# элементов выбрано}}",
+    "download": "Скачать",
+    "unselectAll": "Снять выбор",
+    "generating": "Генерация..."
+  }
+}

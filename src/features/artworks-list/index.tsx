@@ -2,8 +2,9 @@
 
 import type { Artwork } from '@/api/artworks-api.types';
 import { Card } from '../ui/card';
-import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 interface ArtworksListProps {
   items: Artwork[];
@@ -14,8 +15,10 @@ export function ArtworksList({ items }: ArtworksListProps) {
   const searchParams = useSearchParams();
   const isDetailViewOpen = !!params?.artworkId;
 
+  const t = useTranslations('CollectionPage');
+
   if (items.length === 0) {
-    return <p>No results found for your query.</p>;
+    return <p>{t('noResults')}</p>;
   }
 
   return (

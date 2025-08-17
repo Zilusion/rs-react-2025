@@ -2,11 +2,20 @@
 
 import { type ReactNode } from 'react';
 import { ThemeProvider } from '@/contexts/theme';
+import { AbstractIntlMessages, NextIntlClientProvider } from 'next-intl';
 
-export function Providers({ children }: { children: ReactNode }) {
+export function Providers({
+  children,
+  locale,
+  messages
+}: {
+    children: ReactNode;
+    locale: string;
+    messages: AbstractIntlMessages;
+}) {
   return (
-      <ThemeProvider>
-        {children}
-      </ThemeProvider>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <ThemeProvider>{children}</ThemeProvider>
+    </NextIntlClientProvider>
   );
 }

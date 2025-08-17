@@ -1,3 +1,5 @@
+'use client';
+
 import { getArtworkImageUrl } from '@/api/artworks-api';
 import type { Artwork } from '@/api/artworks-api.types';
 import { ImageWithFallback } from '../image-with-fallback';

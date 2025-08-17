@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { useSearchParams, useParams } from 'next/navigation';
 
 interface PaginationProps {
@@ -19,6 +20,8 @@ export function Pagination({ totalPages }: PaginationProps) {
   const hasPreviousPage = previousPage >= 1;
   const hasNextPage = nextPage <= totalPages;
 
+  const t = useTranslations('Pagination');
+
   const buildUrl = (page: number) => {
     const newParams = new URLSearchParams(searchParams?.toString());
     return `/collection/${page}?${newParams.toString()}`;
@@ -32,17 +35,17 @@ export function Pagination({ totalPages }: PaginationProps) {
     <nav className="flex items-center justify-center gap-4 rounded py-4 dark:bg-gray-900">
       {hasPreviousPage && (
         <Link href={buildUrl(previousPage)} className={linkClasses}>
-          ← Previous
+          {t('previous')}
         </Link>
       )}
 
       <span className="font-medium text-gray-600 dark:text-gray-300">
-        Page {currentPage} of {totalPages}
+        {t('pageOf', { currentPage: currentPage, totalPages: totalPages })}
       </span>
 
       {hasNextPage && (
         <Link href={buildUrl(nextPage)} className={linkClasses}>
-          Next →
+          {t('next')}
         </Link>
       )}
     </nav>

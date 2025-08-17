@@ -4,6 +4,7 @@ import type { Artwork } from '@/api/artworks-api.types';
 import { getArtworkImageUrl } from '@/api/artworks-api';
 import { useRouter } from 'next/navigation';
 import { ImageWithFallback } from '@/features/ui/image-with-fallback';
+import { useTranslations } from 'next-intl';
 
 interface DetailsClientProps {
   artwork: Artwork;
@@ -22,6 +23,8 @@ export function DetailsClient({ artwork }: DetailsClientProps) {
 
   const imageUrl = getArtworkImageUrl(artwork.image_id);
 
+  const t = useTranslations('Details');
+
   return (
     <article
       className={`sticky top-28 flex flex-col gap-4 rounded-lg bg-white p-4 shadow-lg ring-1 ring-gray-200 transition-all duration-100 dark:bg-gray-900 dark:shadow-black/40 dark:ring-gray-700`}
@@ -29,7 +32,7 @@ export function DetailsClient({ artwork }: DetailsClientProps) {
       <button
         onClick={handleClose}
         className="self-end text-2xl font-bold text-gray-400 transition hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-200"
-        aria-label="Close details"
+        aria-label={t('close')}
       >
         ×
       </button>
@@ -63,17 +66,17 @@ export function DetailsClient({ artwork }: DetailsClientProps) {
 
       <div className="mt-4 border-t border-gray-200 pt-4 text-sm dark:border-gray-700">
         <h3 className="font-semibold text-gray-800 dark:text-gray-200">
-          Details
+          {t('details')}
         </h3>
         <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
           <dt className="font-medium text-gray-500 dark:text-gray-400">
-            Dimensions:
+            {t('dimensions')}:
           </dt>
           <dd className="text-gray-700 dark:text-gray-300">
             {artwork.dimensions}
           </dd>
           <dt className="font-medium text-gray-500 dark:text-gray-400">
-            Medium:
+            {t('medium')}:
           </dt>
           <dd className="text-gray-700 dark:text-gray-300">
             {artwork.medium_display}
@@ -86,7 +89,7 @@ export function DetailsClient({ artwork }: DetailsClientProps) {
           onClick={handleRefresh}
           className="rounded bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-400 dark:bg-blue-600 dark:hover:bg-blue-500"
         >
-          Refresh
+          {t('refresh')}
         </button>
       </div>
     </article>
