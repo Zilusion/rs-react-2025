@@ -1,6 +1,8 @@
-import type { Artwork } from '@/api/artworks-api.types';
-import { escapeCsvCell } from '@/lib/csv-utils';
+'use client';
+
+import { generateAndDownloadCsv } from '@/app/actions';
 import { useSelectedArtworksStore } from '@/store/selected-artworks';
+import { useTransition } from 'react';
 
 export function Flyout() {
   const selectedArtworks = useSelectedArtworksStore(
@@ -9,24 +11,11 @@ export function Flyout() {
   const clearAll = useSelectedArtworksStore((state) => state.clearAll);
   const count = selectedArtworks.size;
 
-  const handleDownload = () => {
+  const [isPending] = useTransition();
+
+  const handleDownload = async () => {
     const artworksArray = Array.from(selectedArtworks.values());
-
-    const headers = ['ID', 'Title', 'Artist', 'Date', 'URL'];
-    const csvRows = [
-      headers.join(','),
-      ...artworksArray.map((art: Artwork) =>
-        [
-          art.id,
-          escapeCsvCell(art.title),
-          escapeCsvCell(art.artist_display),
-          escapeCsvCell(art.date_display),
-          `https://www.artic.edu/artworks/${art.id}`,
-        ].join(','),
-      ),
-    ];
-
-    const csvString = csvRows.join('\n');
+    const csvString = await generateAndDownloadCsv(artworksArray);
     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -51,6 +40,7 @@ export function Flyout() {
         <div className="flex gap-4">
           <button
             onClick={handleDownload}
+            disabled={isPending}
             className="rounded-md bg-white/20 px-4 py-2 transition hover:bg-white/30"
           >
             Download
