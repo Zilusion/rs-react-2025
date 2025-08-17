@@ -3,38 +3,24 @@
 import { ArtworksSearch } from '@/features/artworks-search';
 import { ArtworksList } from '@/features/artworks-list';
 import { Pagination } from '@/features/ui/pagination';
-import { useArtworks } from '@/features/artworks-list/useArtworks';
-import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import type { ArtworksApiResponse } from '@/api/artworks-api.types';
 
-interface CollectionClientProps {
+interface ListClientProps {
   initialArtworksResponse: ArtworksApiResponse;
-  initialSearchTerm: string;
-  initialPage: number;
 }
 
-export function CollectionClient({
+export function ListClient({
   initialArtworksResponse,
-  initialSearchTerm,
-  initialPage,
-}: CollectionClientProps) {
-  const { data, isLoading, isFetching, isError, error } = useArtworks(
-    {
-      page: initialPage,
-      limit: 16,
-      q: initialSearchTerm,
-    },
-    initialArtworksResponse,
-  );
+}: ListClientProps) {
+  const router = useRouter();
 
-  const queryClient = useQueryClient();
+  const artworks = initialArtworksResponse.data || [];
+  const totalPages = initialArtworksResponse.pagination?.total_pages ?? 0;
+
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['artworks'] });
+    router.refresh();
   };
-
-  const artworks = data?.data || [];
-  const totalPages = data?.pagination?.total_pages ?? 0;
-  const isRefetchingList = isFetching && !isLoading;
 
   return (
     <>
@@ -49,40 +35,23 @@ export function CollectionClient({
         </div>
       </header>
 
-      {isRefetchingList && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed top-0 left-0 z-50 h-1 w-full animate-pulse bg-blue-500"
-        ></div>
-      )}
+      <div className="py-8">
+        <ArtworksList items={artworks} />
 
-      <div>
-        {isError ? (
-          <div className="mb-4 rounded bg-red-100 px-4 py-3 text-red-700">
-            {error instanceof Error ? error.message : 'Error loading data.'}
+        {totalPages > 1 && (
+          <div className="mt-8">
+            <Pagination totalPages={totalPages} />
           </div>
-        ) : (
-          <>
-            <ArtworksList items={artworks} isLoading={isLoading} />
-            {!isLoading && totalPages > 1 && (
-              <div className="mt-8">
-                <Pagination totalPages={totalPages} />
-              </div>
-            )}
-            {!isLoading && (
-              <div className="mt-4 flex justify-end">
-                <button
-                  onClick={handleRefresh}
-                  disabled={isFetching}
-                  className="rounded bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-400 dark:bg-blue-600 dark:hover:bg-blue-500"
-                >
-                  {isFetching ? 'Refreshing...' : 'Refresh'}
-                </button>
-              </div>
-            )}
-          </>
         )}
+
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={handleRefresh}
+            className="rounded bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
     </>
   );

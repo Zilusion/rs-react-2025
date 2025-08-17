@@ -36,7 +36,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       <footer className="p-4 text-center text-sm text-gray-500 transition-colors dark:text-gray-400">
         Art Institute of Chicago API Explorer © 2025
       </footer>
-      {/* <Flyout /> */}
+      <Flyout />
     </div>
   );
 }

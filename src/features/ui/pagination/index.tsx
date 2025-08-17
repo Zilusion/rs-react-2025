@@ -1,7 +1,5 @@
-// src/features/ui/pagination/index.tsx
 'use client';
 
-// --- 1. Меняем импорты ---
 import Link from 'next/link';
 import { useSearchParams, useParams } from 'next/navigation';
 
@@ -10,11 +8,9 @@ interface PaginationProps {
 }
 
 export function Pagination({ totalPages }: PaginationProps) {
-  // 2. Используем хуки Next.js
   const params = useParams();
   const searchParams = useSearchParams();
 
-  // currentPage теперь всегда берется из URL
   const currentPage = Number(params?.page || '1');
 
   const previousPage = currentPage - 1;
@@ -24,9 +20,7 @@ export function Pagination({ totalPages }: PaginationProps) {
   const hasNextPage = nextPage <= totalPages;
 
   const buildUrl = (page: number) => {
-    // 3. Строим URL на основе текущих search-параметров
     const newParams = new URLSearchParams(searchParams?.toString());
-    // `page` теперь часть pathname, а не search, так что его не трогаем
     return `/collection/${page}?${newParams.toString()}`;
   };
 
@@ -36,7 +30,7 @@ export function Pagination({ totalPages }: PaginationProps) {
 
   return (
     <nav className="flex items-center justify-center gap-4 rounded py-4 dark:bg-gray-900">
-      {hasPreviousPage && ( // Используем && для краткости
+      {hasPreviousPage && (
         <Link href={buildUrl(previousPage)} className={linkClasses}>
           ← Previous
         </Link>

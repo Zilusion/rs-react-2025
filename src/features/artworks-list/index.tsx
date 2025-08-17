@@ -1,28 +1,18 @@
 'use client';
 
 import type { Artwork } from '@/api/artworks-api.types';
-import { Loader } from '../ui/loader';
 import { Card } from '../ui/card';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 
 interface ArtworksListProps {
   items: Artwork[];
-  isLoading: boolean;
 }
 
-export function ArtworksList({ items, isLoading }: ArtworksListProps) {
+export function ArtworksList({ items }: ArtworksListProps) {
   const params = useParams();
   const searchParams = useSearchParams();
   const isDetailViewOpen = !!params?.artworkId;
-
-  if (isLoading) {
-    return (
-      <div className="sticky top-[50%] flex items-center justify-center">
-        <Loader />
-      </div>
-    );
-  }
 
   if (items.length === 0) {
     return <p>No results found for your query.</p>;

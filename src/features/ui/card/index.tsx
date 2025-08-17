@@ -46,6 +46,8 @@ export function Card({ artwork }: CardProps) {
         <ImageWithFallback
           src={imageUrl}
           alt={artwork.title}
+          width={400}
+          height={300}
           className="h-full w-full object-cover"
         />
       </div>

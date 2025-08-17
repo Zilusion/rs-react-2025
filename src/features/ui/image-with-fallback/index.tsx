@@ -1,25 +1,26 @@
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface ImageWithFallbackProps {
   src: string | null | undefined;
   alt: string;
   className?: string;
+  width?: number;
+  height?: number;
 }
 
 export function ImageWithFallback({
   src,
   alt,
   className,
+  width = 400,
+  height = 400,
 }: ImageWithFallbackProps) {
   const [error, setError] = useState(false);
 
   useEffect(() => {
     setError(false);
   }, [src]);
-
-  const handleImageError = () => {
-    setError(true);
-  };
 
   const shouldShowPlaceholder = !src || error;
 
@@ -34,6 +35,13 @@ export function ImageWithFallback({
   }
 
   return (
-    <img src={src} alt={alt} className={className} onError={handleImageError} />
+    <Image
+      src={src}
+      alt={alt}
+      className={className}
+      width={width}
+      height={height}
+      onError={() => setError(true)}
+    />
   );
 }

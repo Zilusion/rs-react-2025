@@ -28,7 +28,7 @@ export async function getArtworks(
       ? `${BASE_URL}/artworks/search`
       : `${BASE_URL}/artworks`;
     const url = `${endpoint}?${parameters.toString()}`;
-    const response = await fetch(url);
+    const response = await fetch(url, { next: { revalidate: 3600 } });
     if (!response.ok) {
       const message = `An error has occurred: ${response.status} ${response.statusText}`;
       throw new Error(message);
@@ -46,7 +46,9 @@ export function getArtworkImageUrl(imageId: string | null): string | null {
     }
     return `${IIIF_BASE_URL}/${imageId}${IMAGE_URL_SUFFIX}`;
   } catch (error) {
-    throw new Error(`Failed to get artwork image URL: ${(error as Error).message}`);
+    throw new Error(
+      `Failed to get artwork image URL: ${(error as Error).message}`,
+    );
   }
 }
 
@@ -55,7 +57,7 @@ export async function getArtwork(
 ): Promise<ArtworkDetailApiResponse> {
   try {
     const url = `${BASE_URL}/artworks/${id}`;
-    const response = await fetch(url);
+    const response = await fetch(url, { next: { revalidate: 3600 } });
     if (!response.ok) {
       const message = `An error has occurred: ${response.status} ${response.statusText}`;
       throw new Error(message);

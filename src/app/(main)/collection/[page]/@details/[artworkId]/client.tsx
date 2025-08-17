@@ -1,53 +1,30 @@
-import { getArtworkImageUrl } from '@/api/artworks-api';
-import { Loader } from '../ui/loader';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ImageWithFallback } from '../ui/image-with-fallback';
-import { useArtworkDetails } from './useArtworkDetails';
-import { useQueryClient } from '@tanstack/react-query';
+'use client';
 
-export function ArtworkDetails() {
-  const navigate = useNavigate();
-  const params = useParams();
-  const { data, isLoading, isFetching, isError, error } = useArtworkDetails(
-    params.artworkId,
-  );
+import type { Artwork } from '@/api/artworks-api.types';
+import { getArtworkImageUrl } from '@/api/artworks-api';
+import { useRouter } from 'next/navigation';
+import { ImageWithFallback } from '@/features/ui/image-with-fallback';
+
+interface DetailsClientProps {
+  artwork: Artwork;
+}
+
+export function DetailsClient({ artwork }: DetailsClientProps) {
+  const router = useRouter();
 
   const handleClose = () => {
-    navigate(-1);
+    router.back();
   };
 
-  const queryClient = useQueryClient();
   const handleRefresh = () => {
-    queryClient.invalidateQueries({
-      queryKey: ['artwork', Number(params.artworkId)],
-    });
+    router.refresh();
   };
 
-  if (isLoading) {
-    return (
-      <div className="sticky top-[50%] flex justify-center">
-        <Loader />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="flex h-full min-h-96 w-full items-center justify-center text-red-600">
-        {error?.message || 'Failed to load data.'}
-      </div>
-    );
-  }
-
-  const artwork = data?.data;
-  if (!artwork) {
-    return <div>Artwork not found.</div>;
-  }
   const imageUrl = getArtworkImageUrl(artwork.image_id);
 
   return (
     <article
-      className={`sticky top-28 flex flex-col gap-4 rounded-lg bg-white p-4 shadow-lg ring-1 ring-gray-200 transition-all duration-100 dark:bg-gray-900 dark:shadow-black/40 dark:ring-gray-700 ${isFetching ? 'opacity-50' : 'opacity-100'}`}
+      className={`sticky top-28 flex flex-col gap-4 rounded-lg bg-white p-4 shadow-lg ring-1 ring-gray-200 transition-all duration-100 dark:bg-gray-900 dark:shadow-black/40 dark:ring-gray-700`}
     >
       <button
         onClick={handleClose}
@@ -107,10 +84,9 @@ export function ArtworkDetails() {
       <div className="mt-4 flex justify-end">
         <button
           onClick={handleRefresh}
-          disabled={isFetching}
           className="rounded bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-400 dark:bg-blue-600 dark:hover:bg-blue-500"
         >
-          {isFetching ? 'Refreshing...' : 'Refresh'}
+          Refresh
         </button>
       </div>
     </article>

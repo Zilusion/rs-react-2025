@@ -4,14 +4,12 @@ import { revalidateAndRetry } from "@/app/actions";
 import { usePathname } from "next/navigation";
 import { useTransition } from "react";
 
-interface CollectionErrorProps {
+interface DetailsErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
 }
 
-export default function CollectionError({
-  error,
-}: CollectionErrorProps) {
+export default function DetailsError({ error }: DetailsErrorProps) {
   const pathname = usePathname();
 
  const [isPending, startTransition] = useTransition();
@@ -24,7 +22,7 @@ export default function CollectionError({
 
   return (
     <div className="bg-red-100 p-4 text-red-700">
-      <h2 className="font-bold">Could not fetch collection details!</h2>
+      <h2 className="font-bold">Could not fetch artwork details!</h2>
       <p className="text-sm">{error.message}</p>
       <button
         onClick={handleRetry}
