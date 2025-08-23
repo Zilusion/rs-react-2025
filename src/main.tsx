@@ -1,70 +1,10 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from 'react-router-dom';
-import { CollectionPage } from './pages/collection-page/index.tsx';
-import { ErrorPage } from './pages/error-page/index.tsx';
-import { AboutPage } from './pages/about-page/index.tsx';
-import { NotFoundPage } from './pages/not-found-page/index.tsx';
-import { Layout } from './features/ui/layout/index.tsx';
-import App from './app.tsx';
-import { ArtworkDetails } from './features/artwork-details/index.tsx';
-import { ThemeProvider } from './contexts/theme';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-const queryClient = new QueryClient();
-
-const router = createBrowserRouter([
-  {
-    element: <App />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        element: <Layout />,
-        children: [
-          {
-            path: '/',
-            element: <Navigate to="/collection/1" replace />,
-          },
-          {
-            path: 'collection/:page',
-            element: <CollectionPage />,
-            children: [
-              {
-                path: ':artworkId',
-                element: <ArtworkDetails />,
-              },
-            ],
-          },
-          {
-            path: 'about',
-            element: <AboutPage />,
-          },
-        ],
-      },
-      {
-        path: '*',
-        element: <NotFoundPage />,
-      },
-    ],
-  },
-]);
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
-  createRoot(rootElement).render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <RouterProvider router={router} />
-        </ThemeProvider>
-      </QueryClientProvider>
-    </StrictMode>,
-  );
+  createRoot(rootElement).render(<StrictMode>Hello I am a form!</StrictMode>);
 } else {
   throw new Error("Root element with id 'root' not found");
 }

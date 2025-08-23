@@ -6,7 +6,6 @@ import react from 'eslint-plugin-react';
 import tseslint from 'typescript-eslint';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import reactCompiler from 'eslint-plugin-react-compiler';
-import pluginQuery from '@tanstack/eslint-plugin-query';
 
 export default tseslint.config(
   {
@@ -20,7 +19,6 @@ export default tseslint.config(
       ...tseslint.configs.strict,
       ...tseslint.configs.stylistic,
       eslintPluginPrettier,
-      ...pluginQuery.configs['flat/recommended'],
     ],
     languageOptions: {
       parserOptions: {
