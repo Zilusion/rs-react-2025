@@ -32,6 +32,7 @@ export function PasswordStrength({
     <div className={className}>
       <div className="mt-1 h-2 w-full rounded bg-gray-200">
         <div
+          role="progressbar"
           className={[
             'h-full rounded transition-all',
             strength > 0 ? WIDTHS[strength - 1] : '',

@@ -164,14 +164,9 @@ export function HomePage() {
         }
       >
         {activeForm === 'uncontrolled' && (
-          <UncontrolledForm
-            onSuccess={handleFormSuccess}
-            countries={countries}
-          />
+          <UncontrolledForm onSuccess={handleFormSuccess} />
         )}
-        {activeForm === 'rhf' && (
-          <RHFForm onSuccess={handleFormSuccess} countries={countries} />
-        )}
+        {activeForm === 'rhf' && <RHFForm onSuccess={handleFormSuccess} />}
       </Modal>
     </div>
   );

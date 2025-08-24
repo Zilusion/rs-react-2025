@@ -1,21 +1,20 @@
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { formSchema } from '@/validation/form-schema';
+import {
+  makeFormSchema,
+  type BaseFormIn,
+  type BaseFormOut,
+} from '@/validation/form-schema';
 import { InputField } from '@/components/ui/fields/input-field';
 import { SelectField } from '@/components/ui/fields/select-field';
 import { FileField } from '@/components/ui/fields/file-field';
 import { CheckboxField } from '@/components/ui/fields/checkbox-field';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { PasswordStrength } from '@/components/ui/password-strength';
-import type {
-  FormValuesIn,
-  FormValuesOut,
-  FormSubmission,
-  Country,
-} from '@/types';
+import type { FormSubmission } from '@/types';
 import { fileToBase64 } from '@/lib/file-utils';
 import { useFormStore } from '@/store/form-submissions';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 function genId(): string {
   return `id_${Math.random().toString(36).slice(2, 10)}_${Date.now()}`;
@@ -23,14 +22,17 @@ function genId(): string {
 
 export function RHFForm({
   onSuccess,
-  countries,
 }: {
   onSuccess: (d: FormSubmission) => void;
-  countries: Country[];
 }) {
+  const countries = useFormStore((s) => s.countries);
+  const schema = useMemo(
+    () => makeFormSchema(countries.map((c) => c.name.common)),
+    [countries],
+  );
   const { register, handleSubmit, watch, trigger, getFieldState, formState } =
-    useForm<FormValuesIn, unknown, FormValuesOut>({
-      resolver: zodResolver(formSchema),
+    useForm<BaseFormIn, unknown, BaseFormOut>({
+      resolver: zodResolver(schema),
       mode: 'onChange',
     });
 
@@ -51,7 +53,7 @@ export function RHFForm({
     ? errors.confirmPassword?.message
     : undefined;
 
-  const onSubmit: SubmitHandler<FormValuesOut> = async (data) => {
+  const onSubmit: SubmitHandler<BaseFormOut> = async (data) => {
     const img = data.picture?.[0];
     const pictureBase64 = img ? await fileToBase64(img) : '';
     const submission: FormSubmission = {

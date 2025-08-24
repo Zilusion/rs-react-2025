@@ -51,7 +51,6 @@ export const FileField = forwardRef<HTMLInputElement, FileFieldProps>(
               : '',
             className,
           ].join(' ')}
-          value={value as string | undefined}
           {...props}
         />
         {showSelected && filename && (

@@ -1,8 +1,8 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { formSchema } from '@/validation/form-schema';
+import { makeFormSchema } from '@/validation/form-schema';
 import { fileToBase64 } from '@/lib/file-utils';
 import { useFormStore } from '@/store/form-submissions';
-import type { Country, FormSubmission } from '@/types';
+import type { FormSubmission } from '@/types';
 import { InputField } from '@/components/ui/fields/input-field';
 import { SelectField } from '@/components/ui/fields/select-field';
 import { FileField } from '@/components/ui/fields/file-field';
@@ -14,13 +14,28 @@ function genId(): string {
   return `id_${Math.random().toString(36).slice(2, 10)}_${Date.now()}`;
 }
 
+function createEmptyFileList(): FileList {
+  const fl: Partial<FileList> & Record<number, File> = {
+    length: 0,
+    item: () => null,
+  };
+  const proto =
+    (globalThis as unknown as { FileList?: { prototype: object } }).FileList
+      ?.prototype ?? Object.prototype;
+  Object.setPrototypeOf(fl, proto);
+  return fl as FileList;
+}
+
 export function UncontrolledForm({
   onSuccess,
-  countries,
 }: {
   onSuccess: (d: FormSubmission) => void;
-  countries: Country[];
 }) {
+  const countries = useFormStore((s) => s.countries);
+  const schema = useMemo(
+    () => makeFormSchema(countries.map((c) => c.name.common)),
+    [countries],
+  );
   const formRef = useRef<HTMLFormElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const addSubmission = useFormStore((s) => s.addSubmission);
@@ -40,6 +55,7 @@ export function UncontrolledForm({
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+    const files = fileRef.current?.files ?? createEmptyFileList();
     const payload = {
       name: String(fd.get('name') ?? ''),
       age: String(fd.get('age') ?? ''),
@@ -48,13 +64,13 @@ export function UncontrolledForm({
       confirmPassword: String(fd.get('confirmPassword') ?? ''),
       gender: String(fd.get('gender') ?? ''),
       acceptTerms: fd.get('acceptTerms') ? true : false,
-      picture: fileRef.current?.files ?? new DataTransfer().files,
+      picture: files,
       country: String(fd.get('country') ?? ''),
     };
 
     setPwPreview(payload.password);
 
-    const parsed = await formSchema.safeParseAsync(payload);
+    const parsed = await schema.safeParseAsync(payload);
     if (!parsed.success) {
       const fieldErrs: Record<string, string> = {};
       for (const iss of parsed.error.issues) {

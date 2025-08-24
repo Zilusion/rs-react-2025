@@ -4,7 +4,7 @@ const MAX_FILE_SIZE_MB = 1;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
 
-export const formSchema = z
+export const baseFormSchema = z
   .object({
     name: z
       .string()
@@ -47,10 +47,28 @@ export const formSchema = z
     path: ['confirmPassword'],
     error: "Passwords don't match",
     when(payload) {
-      const onlyPw = formSchema.pick({
+      const onlyPw = baseFormSchema.pick({
         password: true,
         confirmPassword: true,
       });
       return onlyPw.safeParse(payload.value).success;
     },
   });
+
+export type BaseFormIn = z.input<typeof baseFormSchema>;
+export type BaseFormOut = z.output<typeof baseFormSchema>;
+
+export function makeFormSchema(allowedCountries: string[]) {
+  const norm = (s: string) => s.trim();
+  const set = new Set(allowedCountries.map(norm));
+
+  return baseFormSchema.superRefine((data, ctx) => {
+    if (!set.has(norm(data.country))) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['country'],
+        message: 'Please pick a country from the list.',
+      });
+    }
+  });
+}

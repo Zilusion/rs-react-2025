@@ -1,10 +1,6 @@
-import { z } from 'zod';
-import { formSchema } from '@/validation/form-schema';
+import type { BaseFormOut } from '@/validation/form-schema';
 
-export type FormValuesIn = z.input<typeof formSchema>;
-export type FormValuesOut = z.output<typeof formSchema>;
-
-export type FormSubmission = Omit<FormValuesOut, 'picture'> & {
+export type FormSubmission = Omit<BaseFormOut, 'picture'> & {
   id: string;
   picture: string;
 };
