@@ -9,7 +9,7 @@ import reactCompiler from 'eslint-plugin-react-compiler';
 
 export default tseslint.config(
   {
-    ignores: ['dist', '.husky', 'node_modules'],
+    ignores: ['dist', '.husky', 'node_modules', 'coverage'],
   },
 
   {
