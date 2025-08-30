@@ -3,5 +3,8 @@
     "stylelint-config-standard",
     "stylelint-config-tailwindcss",
     "stylelint-prettier/recommended"
-  ]
+  ],
+  "rules": {
+    "at-rule-no-deprecated": [true, { "ignoreAtRules": ["apply"] }]
+  }
 }
