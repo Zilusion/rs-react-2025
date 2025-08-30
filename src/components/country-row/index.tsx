@@ -1,4 +1,5 @@
 import type { Country } from '@/types';
+import { memo } from 'react';
 
 export interface CountryRowProps {
   country: Country;
@@ -6,7 +7,7 @@ export interface CountryRowProps {
   visibleColumns: string[];
 }
 
-export function CountryRow({
+export const CountryRow = memo(function CountryRow({
   country,
   selectedYear,
   visibleColumns,
@@ -55,4 +56,14 @@ export function CountryRow({
       ))}
     </tr>
   );
+}, areEqual);
+
+function areEqual(prev: CountryRowProps, next: CountryRowProps) {
+  if (prev.selectedYear !== next.selectedYear) return false;
+  if (prev.country !== next.country) return false;
+  if (prev.visibleColumns.length !== next.visibleColumns.length) return false;
+  for (let i = 0; i < prev.visibleColumns.length; i++) {
+    if (prev.visibleColumns[i] !== next.visibleColumns[i]) return false;
+  }
+  return true;
 }

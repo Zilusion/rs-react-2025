@@ -1,41 +1,32 @@
-export type SortDirection = 'asc' | 'desc';
+import type { Region } from '@/types';
+import { memo } from 'react';
 
-export interface SortConfig {
-  key: 'name' | 'population';
-  direction: SortDirection;
-}
+export type SortDirection = 'asc' | 'desc';
+export type SortKey = 'name' | 'population';
 
 export interface ControlsProps {
   searchTerm: string;
-  setSearchTerm: (searchTerm: string) => void;
+  onSearch: (value: string) => void;
   selectedYear: number;
-  setSelectedYear: (selectedYear: number) => void;
-  sortConfig: SortConfig | null;
-  setSortConfig: (sortConfig: SortConfig | null) => void;
+  onChangeYear: (year: number) => void;
+  onSort: (key: SortKey) => void;
   onOpenColumnSelector: () => void;
+  region: Region | 'All';
+  onChangeRegion: (region: Region | 'All') => void;
+  regions: readonly Region[];
 }
 
-export function Controls({
+export const Controls = memo(function Controls({
   searchTerm,
-  setSearchTerm,
+  onSearch,
   selectedYear,
-  setSelectedYear,
-  sortConfig,
-  setSortConfig,
+  onChangeYear,
+  onSort,
   onOpenColumnSelector,
+  region,
+  onChangeRegion,
+  regions,
 }: ControlsProps) {
-  const handleSort = (key: 'name' | 'population') => {
-    let direction: SortDirection = 'asc';
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === 'asc'
-    ) {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
-
   return (
     <div className="card sticky top-5 z-10">
       <div className="card-section flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
@@ -44,14 +35,29 @@ export function Controls({
             type="search"
             placeholder="Search country..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => onSearch(e.target.value)}
             className="input"
             aria-label="Search country"
             name="search"
           />
           <select
+            value={region}
+            onChange={(e) =>
+              onChangeRegion(e.target.value as ControlsProps['region'])
+            }
+            className="select"
+            aria-label="Filter by region"
+          >
+            <option value="All">All regions</option>
+            {regions.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
+          <select
             value={selectedYear}
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            onChange={(e) => onChangeYear(Number(e.target.value))}
             className="select"
             aria-label="Select year"
             name="year"
@@ -67,15 +73,11 @@ export function Controls({
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => handleSort('name')}
-            className="btn"
-            type="button"
-          >
+          <button onClick={() => onSort('name')} className="btn" type="button">
             Sort by Name
           </button>
           <button
-            onClick={() => handleSort('population')}
+            onClick={() => onSort('population')}
             className="btn"
             type="button"
           >
@@ -92,4 +94,4 @@ export function Controls({
       </div>
     </div>
   );
-}
+});

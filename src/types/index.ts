@@ -6,8 +6,11 @@ export interface YearData {
   [key: string]: number | undefined;
 }
 
+export type Region = 'Africa' | 'Americas' | 'Asia' | 'Europe' | 'Oceania';
+
 export interface Country {
   name: string;
   iso_code?: string;
   data: YearData[];
+  region?: Region;
 }

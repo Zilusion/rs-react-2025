@@ -1,6 +1,6 @@
 import type { Country } from '@/types';
 import { CountryRow } from '../country-row';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useMemo } from 'react';
 
 export interface CountryListProps {
   countries: Country[];
@@ -8,7 +8,7 @@ export interface CountryListProps {
   visibleColumns: string[];
 }
 
-export function CountryList({
+export const CountryList = memo(function CountryList({
   countries,
   selectedYear,
   visibleColumns,
@@ -20,6 +20,14 @@ export function CountryList({
     const t = setTimeout(() => setFlash(false), 900);
     return () => clearTimeout(t);
   }, [selectedYear]);
+
+  const extraCols = useMemo(
+    () =>
+      visibleColumns.filter(
+        (c) => !['population', 'co2', 'co2_per_capita'].includes(c),
+      ),
+    [visibleColumns],
+  );
 
   return (
     <div className="table-wrap">
@@ -50,14 +58,11 @@ export function CountryList({
             <th scope="col" className="th">
               CO₂ per capita
             </th>
-            {visibleColumns.map(
-              (col) =>
-                !['population', 'co2', 'co2_per_capita'].includes(col) && (
-                  <th key={col} scope="col" className="th">
-                    {col.replace(/_/g, ' ')}
-                  </th>
-                ),
-            )}
+            {extraCols.map((col) => (
+              <th key={col} scope="col" className="th">
+                {col.replace(/_/g, ' ')}
+              </th>
+            ))}
           </tr>
         </thead>
 
@@ -74,4 +79,4 @@ export function CountryList({
       </table>
     </div>
   );
-}
+});

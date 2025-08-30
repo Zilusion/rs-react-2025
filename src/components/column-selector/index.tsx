@@ -1,10 +1,12 @@
+import { memo } from 'react';
+
 interface ColumnSelectorProps {
   allColumns: string[];
   selectedColumns: string[];
   onColumnChange: (column: string) => void;
 }
 
-export function ColumnSelector({
+export const ColumnSelector = memo(function ColumnSelector({
   allColumns,
   selectedColumns,
   onColumnChange,
@@ -34,4 +36,4 @@ export function ColumnSelector({
       })}
     </div>
   );
-}
+});

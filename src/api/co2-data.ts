@@ -1,3 +1,4 @@
+import { ISO_TO_REGION } from '@/constants/regions';
 import type { Country, YearData } from '@/types';
 
 export async function fetchAndProcessData(): Promise<Country[]> {
@@ -17,11 +18,14 @@ export async function fetchAndProcessData(): Promise<Country[]> {
 
   const countries: Country[] = [];
   for (const countryName in json) {
-    if (json[countryName].iso_code) {
+    const entry = json[countryName];
+    if (entry.iso_code) {
+      const iso = entry.iso_code;
       countries.push({
         name: countryName,
-        iso_code: json[countryName].iso_code,
-        data: json[countryName].data.map((d: YearData) => ({
+        iso_code: iso,
+        region: ISO_TO_REGION[iso],
+        data: entry.data.map((d) => ({
           ...d,
           population: d.population === 0 ? undefined : d.population,
           co2: d.co2 === 0 ? undefined : d.co2,
